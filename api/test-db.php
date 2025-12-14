@@ -34,3 +34,17 @@ try {
 }
 
 echo json_encode($out, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+// Test normalizeUrls
+$testData = [
+    'portfolio' => [
+        [
+            'images' => [
+                ['url' => '/portfolio-php/uploads/test.jpg', 'caption' => '']
+            ]
+        ]
+    ]
+];
+
+$normalized = normalizeUrls($testData);
+echo "\n\nNormalized test:\n" . json_encode($normalized, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
