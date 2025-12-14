@@ -80,15 +80,16 @@ function fixUploadPathsRecursive(&$data) {
 }
 
 /**
- * Normalize image URLs - add /portfolio-php prefix to local uploads
+ * Normalize image URLs - add base URL to local uploads
  */
 function normalizeUrls($data) {
+    $uploadBase = getenv('UPLOAD_BASE_URL') ?: '/portfolio-php';
     if (is_array($data)) {
         $result = [];
         foreach ($data as $key => $value) {
-            if ($key === 'url' && is_string($value) && strpos($value, '/uploads/') === 0 && strpos($value, '/portfolio-php') !== 0) {
-                // Add /portfolio-php prefix to local upload paths
-                $result[$key] = '/portfolio-php' . $value;
+            if ($key === 'url' && is_string($value) && strpos($value, '/uploads/') === 0 && strpos($value, $uploadBase) !== 0) {
+                // Add base URL prefix to local upload paths
+                $result[$key] = $uploadBase . $value;
             } elseif (is_array($value) || is_object($value)) {
                 $result[$key] = normalizeUrls($value);
             } else {
@@ -99,8 +100,8 @@ function normalizeUrls($data) {
     } elseif (is_object($data)) {
         $obj = clone $data;
         foreach ($obj as $key => $value) {
-            if ($key === 'url' && is_string($value) && strpos($value, '/uploads/') === 0 && strpos($value, '/portfolio-php') !== 0) {
-                $obj->$key = '/portfolio-php' . $value;
+            if ($key === 'url' && is_string($value) && strpos($value, '/uploads/') === 0 && strpos($value, $uploadBase) !== 0) {
+                $obj->$key = $uploadBase . $value;
             } elseif (is_array($value) || is_object($value)) {
                 $obj->$key = normalizeUrls($value);
             }
