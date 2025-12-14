@@ -20,6 +20,11 @@ RUN chown -R www-data:www-data /var/www/html
 COPY api/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Ensure php-fpm listens on TCP 127.0.0.1:9000 (avoid socket mismatch)
+RUN if [ -f /usr/local/etc/php-fpm.d/www.conf ]; then \
+      sed -i "s/^listen = .*/listen = 127.0.0.1:9000/" /usr/local/etc/php-fpm.d/www.conf || true; \
+    fi
+
 EXPOSE 80
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
