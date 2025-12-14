@@ -13,7 +13,8 @@ COPY api/ /var/www/html/
 
 # Nginx config: serve PHP through php-fpm, fallback to index.php for SPA
 RUN rm /etc/nginx/sites-enabled/default || true
-COPY api/nginx.conf /etc/nginx/conf.d/default.conf
+# copy our nginx config with a non-default name to avoid conflicts with any base-image default
+COPY api/nginx.conf /etc/nginx/conf.d/portfolio.conf
 
 RUN chown -R www-data:www-data /var/www/html
 
