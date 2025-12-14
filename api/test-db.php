@@ -36,6 +36,7 @@ try {
 echo json_encode($out, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
 // Test normalizeUrls
+require_once __DIR__ . '/helpers.php';
 $testData = [
     'portfolio' => [
         [
