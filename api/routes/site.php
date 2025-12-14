@@ -118,6 +118,9 @@ function getSiteData() {
         'social' => $social
     ];
     
+    // Normalize URLs for uploads
+    $response = normalizeUrls($response);
+    
     jsonResponse($response);
 }
 
