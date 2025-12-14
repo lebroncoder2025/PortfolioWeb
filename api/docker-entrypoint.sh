@@ -45,7 +45,20 @@ rm -f /etc/nginx/sites-available/default || true
 # We place our config under /etc/nginx/conf.d/portfolio.conf (copied at build time)
 # Do not symlink into sites-enabled to avoid duplicate default_server definitions from base image files.
 
+echo "--- nginx config test ---"
+nginx -t 2>&1 | tee -a /var/log/nginx/error.log || true
+
+echo "Starting nginx..."
 nginx || { echo "nginx failed to start"; tail -n 200 /var/log/nginx/error.log || true; exit 1; }
+
+echo "--- listening ports ---" >> /var/log/nginx/error.log 2>&1
+if command -v ss >/dev/null 2>&1; then
+	ss -lntp >> /var/log/nginx/error.log 2>&1 || true
+elif command -v netstat >/dev/null 2>&1; then
+	netstat -lntp >> /var/log/nginx/error.log 2>&1 || true
+else
+	echo "(no ss/netstat available)" >> /var/log/nginx/error.log 2>&1
+fi
 
 # Ensure log files exist, then tail them to keep container running and to surface errors in Railway logs
 mkdir -p /var/log/nginx
