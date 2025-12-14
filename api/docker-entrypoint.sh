@@ -39,6 +39,14 @@ if [ "$READY" -ne 1 ]; then
 fi
 
 echo "Starting nginx in background..."
+# Remove any pre-existing default site that may define a default_server to avoid duplicate server errors
+rm -f /etc/nginx/sites-enabled/default || true
+rm -f /etc/nginx/sites-available/default || true
+# Ensure our conf is linked in sites-enabled for cleanliness
+if [ -f /etc/nginx/conf.d/default.conf ]; then
+	ln -sf /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
+fi
+
 nginx || { echo "nginx failed to start"; tail -n 200 /var/log/nginx/error.log || true; exit 1; }
 
 # Ensure log files exist, then tail them to keep container running and to surface errors in Railway logs
