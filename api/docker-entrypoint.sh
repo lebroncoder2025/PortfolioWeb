@@ -38,5 +38,11 @@ if [ "$READY" -ne 1 ]; then
 	exit 1
 fi
 
-echo "Starting nginx in foreground..."
-nginx -g "daemon off;"
+echo "Starting nginx in background..."
+nginx || { echo "nginx failed to start"; tail -n 200 /var/log/nginx/error.log || true; exit 1; }
+
+# Ensure log files exist, then tail them to keep container running and to surface errors in Railway logs
+mkdir -p /var/log/nginx
+touch /var/log/nginx/error.log /var/log/nginx/access.log /var/log/php-fpm.log || true
+echo "Tailing nginx and php-fpm logs..."
+exec tail -F /var/log/nginx/error.log /var/log/nginx/access.log /var/log/php-fpm.log
