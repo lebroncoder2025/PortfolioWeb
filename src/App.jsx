@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { LoginPage, AdminDashboard } from './AdminPanelComponents';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -18,7 +18,7 @@ import CookieConsent from './components/CookieConsent';
 // API URL - configurable via environment variable or defaults to relative path
 // For GitHub Pages + PHP hosting: set REACT_APP_API_URL to your PHP API URL
 // For local XAMPP: set to http://localhost/portfolio-php/api
-const API_URL = process.env.REACT_APP_API_URL || '/api';
+const API_URL = process.env.REACT_APP_API_URL || 'https://portfolioweb-production-5696.up.railway.app';
 
 function AppShell({ isLoggedIn, onLogout, onLogin, siteData, setSiteData }) {
   const location = useLocation();
@@ -128,7 +128,8 @@ function App() {
   };
 
   // Use basename for subdirectory deployment (e.g., /portfolio-php/)
-  const basename = process.env.REACT_APP_BASENAME || '';
+  // const basename = process.env.REACT_APP_BASENAME || '';
+  const basename = '';
 
   return (
     <Router basename={basename}>

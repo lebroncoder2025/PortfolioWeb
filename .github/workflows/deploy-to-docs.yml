@@ -21,8 +21,7 @@ jobs:
         run: npm install
       - name: Build
         env:
-          REACT_APP_API_URL: ${{ secrets.RAILWAY_API_URL || secrets.BACKEND_URL || '/api' }}
-          REACT_APP_BASENAME: /PortfolioWeb
+          REACT_APP_API_URL: ${{ secrets.RAILWAY_API_URL || secrets.BACKEND_URL || 'https://portfolioweb-production-5696.up.railway.app' }}
           PUBLIC_URL: /PortfolioWeb
         run: npm run build
       - name: Setup PHP (for static API generation, optional)
