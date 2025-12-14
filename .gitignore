@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build output
+build/
+
+# Environment files (keep .env.example)
+.env
+.env.local
+.env.production.local
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# PHP
+api/cache/*
+!api/cache/.gitkeep
+
+# Uploads (keep directory structure)
+uploads/*
+!uploads/.gitkeep
+
+# Logs directory
+logs/*
+!logs/.gitkeep

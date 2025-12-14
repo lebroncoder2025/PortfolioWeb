@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  scroll-behavior: smooth;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure app shell uses flexbox layout */
+#root > * {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#root > main {
+  flex: 1;
+}
+
+#root > footer {
+  margin-top: auto;
+}
+
+/* Ensure app content accounts for fixed header and scales responsively */
+.app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;}

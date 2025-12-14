@@ -1,0 +1,16 @@
+RewriteEngine On
+RewriteBase /portfolio-php/
+
+# Serve static files directly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Serve directories directly
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Route API requests to api/index.php
+RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+
+# Handle React Router (SPA) - all other requests go to index.html
+RewriteRule ^ index.html [QSA,L]
