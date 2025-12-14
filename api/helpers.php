@@ -87,9 +87,9 @@ function normalizeUrls($data) {
     if (is_array($data)) {
         $result = [];
         foreach ($data as $key => $value) {
-            if ($key === 'url' && is_string($value) && strpos($value, '/uploads/') === 0 && strpos($value, $uploadBase) !== 0) {
-                // Add base URL prefix to local upload paths
-                $result[$key] = $uploadBase . $value;
+            if ($key === 'url' && is_string($value) && strpos($value, '/portfolio-php/uploads/') === 0) {
+                // Replace /portfolio-php/uploads/ with the base URL
+                $result[$key] = str_replace('/portfolio-php/uploads/', $uploadBase, $value);
             } elseif (is_array($value) || is_object($value)) {
                 $result[$key] = normalizeUrls($value);
             } else {
@@ -100,8 +100,8 @@ function normalizeUrls($data) {
     } elseif (is_object($data)) {
         $obj = clone $data;
         foreach ($obj as $key => $value) {
-            if ($key === 'url' && is_string($value) && strpos($value, '/uploads/') === 0 && strpos($value, $uploadBase) !== 0) {
-                $obj->$key = $uploadBase . $value;
+            if ($key === 'url' && is_string($value) && strpos($value, '/portfolio-php/uploads/') === 0) {
+                $obj->$key = str_replace('/portfolio-php/uploads/', $uploadBase, $value);
             } elseif (is_array($value) || is_object($value)) {
                 $obj->$key = normalizeUrls($value);
             }
