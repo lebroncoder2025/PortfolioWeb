@@ -41,7 +41,7 @@ $testData = [
     'portfolio' => [
         [
             'images' => [
-                ['url' => '/portfolio-php/uploads/test.jpg', 'caption' => '']
+                ['url' => '/uploads/test.jpg', 'caption' => '']
             ]
         ]
     ]
