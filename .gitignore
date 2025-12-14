@@ -33,3 +33,5 @@ uploads/*
 # Logs directory
 logs/*
 !logs/.gitkeep
+
+*.ps1

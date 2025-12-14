@@ -21,23 +21,24 @@ jobs:
         run: npm ci
       - name: Build
         env:
-          REACT_APP_API_URL: ${{ secrets.BACKEND_URL }}
+          REACT_APP_API_URL: ${{ secrets.RAILWAY_API_URL || secrets.BACKEND_URL || '/api' }}
           REACT_APP_BASENAME: /PortfolioWeb
           PUBLIC_URL: /PortfolioWeb
         run: npm run build
-      - name: Setup PHP
+      - name: Setup PHP (for static API generation, optional)
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-      - name: Fetch API from DB (generate static JSON)
+      - name: Fetch API from DB (generate static JSON fallback)
+        if: ${{ secrets.DB_HOST && secrets.DB_NAME && secrets.DB_USER && secrets.DB_PASSWORD }}
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_PORT: ${{ secrets.DB_PORT || '3306' }}
         run: |
-          php scripts/fetch-api.php build/api
+          php scripts/fetch-api.php build/api || echo "Warning: static API generation failed, frontend will rely on RAILWAY_API_URL"
       - name: Copy to docs and push
         run: |
           rm -rf docs || true
