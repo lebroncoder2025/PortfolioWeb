@@ -49,3 +49,12 @@ $testData = [
 
 $normalized = normalizeUrls($testData);
 echo "\n\nNormalized test:\n" . json_encode($normalized, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+// Check DB URLs
+try {
+    $stmt = $pdo->query('SELECT url FROM portfolio_images LIMIT 5');
+    $urls = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    echo "\n\nDB URLs:\n" . json_encode($urls, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+} catch (Exception $e) {
+    echo "\n\nDB URLs error: " . $e->getMessage();
+}
