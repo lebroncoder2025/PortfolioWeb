@@ -1,25 +1,25 @@
-# Force rebuild on Railway - v3
-FROM php:8.2-apache-bullseye
+FROM php:8.2-fpm-bullseye
 
-# Clean up any existing MPM modules first
-RUN apt-get update && apt-get install -y apache2-dev && \
-    a2dismod mpm_prefork mpm_worker mpm_event mpm_prefork || true
-
+# Install nginx and required packages
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends libzip-dev zip unzip \
+  && apt-get install -y --no-install-recommends nginx ca-certificates libzip-dev zip unzip \
   && docker-php-ext-install pdo pdo_mysql \
   && rm -rf /var/lib/apt/lists/*
-
-# Enable only prefork MPM and rewrite
-RUN a2enmod mpm_prefork rewrite
 
 WORKDIR /var/www/html
 
 # Copy API sources into the webroot
 COPY . /var/www/html/
 
+# Nginx config: serve PHP through php-fpm, fallback to index.php for SPA
+RUN rm /etc/nginx/sites-enabled/default || true
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 RUN chown -R www-data:www-data /var/www/html
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
