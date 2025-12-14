@@ -63,7 +63,7 @@ Zobacz dokumentację:
 ## Domyślne dane logowania
 
 - Email: `admin@example.com`
-- Hasło: `Admin123!`
+- Hasło: `[ZMIENIONE - sprawdź w config.php lub bazie danych]`
 
 **⚠️ Zmień hasło po pierwszym logowaniu!**
 
