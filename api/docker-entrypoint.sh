@@ -68,6 +68,12 @@ else
 	echo "(no ss/netstat available)" >> /var/log/nginx/error.log 2>&1
 fi
 
+# Log presence of DB-related env vars (mask password) for debugging
+DB_HOST_MASKED="${DB_HOST:-<empty>}"
+DB_USER_MASKED="${DB_USER:-<empty>}"
+DB_NAME_MASKED="${DB_NAME:-<empty>}"
+echo "DB env: DB_HOST=${DB_HOST_MASKED}, DB_USER=${DB_USER_MASKED}, DB_NAME=${DB_NAME_MASKED}" >> /var/log/nginx/error.log 2>&1 || true
+
 # Ensure log files exist, then tail them to keep container running and to surface errors in Railway logs
 mkdir -p /var/log/nginx
 touch /var/log/nginx/error.log /var/log/nginx/access.log /var/log/php-fpm.log || true
