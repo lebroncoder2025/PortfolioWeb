@@ -5,7 +5,10 @@ RUN apt-get update \
   && docker-php-ext-install pdo pdo_mysql \
   && rm -rf /var/lib/apt/lists/*
 
-RUN a2enmod rewrite
+# Disable conflicting MPM modules and ensure only one is enabled
+RUN a2dismod mpm_prefork mpm_worker mpm_event || true && \
+    a2enmod mpm_prefork && \
+    a2enmod rewrite
 
 WORKDIR /var/www/html
 
