@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/json');
 
+$uploadBase = getenv('UPLOAD_BASE_URL') ?: '/portfolio-php';
+
 // Simple DB connectivity test - call via browser: /api/test-db.php
 $host = getenv('DB_HOST') ?: '';
 $port = getenv('DB_PORT') ?: '3306';
@@ -14,6 +16,7 @@ $out = [
         'DB_PORT' => $port,
         'DB_NAME' => $db,
         'DB_USER' => $user,
+        'UPLOAD_BASE_URL' => $uploadBase,
     ]
 ];
 
