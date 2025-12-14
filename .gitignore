@@ -24,6 +24,7 @@ npm-debug.log*
 # PHP
 api/cache/*
 !api/cache/.gitkeep
+api/config.local.php
 
 # Uploads (keep directory structure)
 uploads/*
