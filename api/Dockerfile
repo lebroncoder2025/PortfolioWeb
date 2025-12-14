@@ -8,16 +8,16 @@ RUN apt-get update \
 
 WORKDIR /var/www/html
 
-# Copy API sources into the webroot
-COPY . /var/www/html/
+# Copy API sources into the webroot (handle repo-root build context)
+COPY api/ /var/www/html/
 
 # Nginx config: serve PHP through php-fpm, fallback to index.php for SPA
 RUN rm /etc/nginx/sites-enabled/default || true
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY api/nginx.conf /etc/nginx/conf.d/default.conf
 
 RUN chown -R www-data:www-data /var/www/html
 
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY api/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 80
