@@ -29,8 +29,16 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
+      - name: Check if DB secrets are available
+        id: check-secrets
+        run: |
+          if [ -n "${{ secrets.DB_HOST }}" ] && [ -n "${{ secrets.DB_NAME }}" ] && [ -n "${{ secrets.DB_USER }}" ] && [ -n "${{ secrets.DB_PASSWORD }}" ]; then
+            echo "db_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "db_available=false" >> $GITHUB_OUTPUT
+          fi
       - name: Fetch API from DB (generate static JSON fallback)
-        if: ${{ secrets.DB_HOST && secrets.DB_NAME && secrets.DB_USER && secrets.DB_PASSWORD }}
+        if: steps.check-secrets.outputs.db_available == 'true'
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_NAME: ${{ secrets.DB_NAME }}
