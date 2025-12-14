@@ -8,12 +8,14 @@ Steps
 1) Repo
 - Ensure `.gitignore` excludes `api/config.local.php` and `api/uploads`.
 
-2) Secrets (add these to GitHub repository Settings → Secrets):
-- `BACKEND_URL` — full URL to your PHP API root, e.g. https://yourdomain/portfolio-php/api (used at build time)
-- `FTP_HOST` — (optional) jchost FTP hostname if you want to automate backend deploy
-- `FTP_USER` — (optional) FTP username
-- `FTP_PASSWORD` — (optional) FTP password
-- `FTP_PATH` — (optional) target path on FTP server (e.g. `/public_html/portfolio-php`)
+2) Secrets (add these to GitHub repository Settings → Secrets → Actions):
+- `DB_HOST` — hostname of your MySQL server (required for static API generation)
+- `DB_NAME` — database name (required)
+- `DB_USER` — database user (required)
+- `DB_PASSWORD` — database password (required)
+- `DB_PORT` — optional, default 3306
+- `BACKEND_URL` — (optional) full API root URL for runtime if you host API elsewhere (e.g. https://yourdomain/portfolio-php/api)
+- `FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`, `FTP_PATH` — optional, only if you want automated FTP deploy of PHP backend
 
 3) Frontend (GitHub Actions)
 - Push to `main` branch to trigger the workflow which builds the React app and deploys `build/` to `gh-pages` branch.

@@ -25,6 +25,19 @@ jobs:
           REACT_APP_BASENAME: /PortfolioWeb
           PUBLIC_URL: /PortfolioWeb
         run: npm run build
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Fetch API from DB (generate static JSON)
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+        run: |
+          php scripts/fetch-api.php build/api
       - name: Copy to docs and push
         run: |
           rm -rf docs || true

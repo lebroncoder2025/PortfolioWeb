@@ -89,7 +89,11 @@ function App() {
   // Fetch site data
   const fetchSite = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/site`);
+      // Try dynamic endpoint first, then fallback to static JSON generated at build time
+      let res = await fetch(`${API_URL}/site`);
+      if (!res.ok) {
+        res = await fetch(`${API_URL}/site.json`);
+      }
       if (res.ok) {
         const data = await res.json();
         setSiteData(data);
