@@ -46,6 +46,14 @@ rm -f /etc/nginx/sites-available/default || true
 # Do not symlink into sites-enabled to avoid duplicate default_server definitions from base image files.
 
 echo "--- nginx config test ---"
+
+# Substitute LISTEN_PORT in nginx config with the platform PORT env var if provided (fallback 80)
+: ${PORT:=80}
+echo "Using PORT=${PORT} for nginx listen" >> /var/log/nginx/error.log 2>&1
+if [ -f /etc/nginx/conf.d/portfolio.conf ]; then
+	sed -i "s/LISTEN_PORT/${PORT}/g" /etc/nginx/conf.d/portfolio.conf || true
+fi
+
 nginx -t 2>&1 | tee -a /var/log/nginx/error.log || true
 
 echo "Starting nginx..."
