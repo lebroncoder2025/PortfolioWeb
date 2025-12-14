@@ -190,11 +190,18 @@ function setCorsHeaders() {
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
     
     // Check if origin is allowed
-    $allowedOrigins = ALLOWED_ORIGINS;
+    $allowedOrigins = defined('ALLOWED_ORIGINS') ? ALLOWED_ORIGINS : ['*'];
+    
+    // Handle CORS_ORIGINS env var if defined (override config)
+    if (getenv('CORS_ORIGINS')) {
+        $allowedOrigins = explode(',', getenv('CORS_ORIGINS'));
+    }
+
     if (in_array('*', $allowedOrigins) || in_array($origin, $allowedOrigins)) {
         header("Access-Control-Allow-Origin: $origin");
     } else {
-        header("Access-Control-Allow-Origin: " . $allowedOrigins[0]);
+        // Default to first allowed origin if specific origin not matched
+        header("Access-Control-Allow-Origin: " . ($allowedOrigins[0] ?? '*'));
     }
     
     header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");

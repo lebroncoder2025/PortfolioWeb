@@ -1,0 +1,2 @@
+# Force LF line endings for shell scripts to avoid "exec format error" in Docker
+*.sh text eol=lf
