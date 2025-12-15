@@ -81,16 +81,21 @@ class JWT {
      * Get token from Authorization header
      */
     public static function getTokenFromHeader() {
-        $headers = getallheaders();
+        // Try different ways to get the header
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null;
         
-        // Handle case-insensitive headers
-        $authHeader = null;
-        foreach ($headers as $key => $value) {
-            if (strtolower($key) === 'authorization') {
-                $authHeader = $value;
-                break;
+        if (!$authHeader) {
+            $headers = getallheaders();
+            // Handle case-insensitive headers
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) === 'authorization') {
+                    $authHeader = $value;
+                    break;
+                }
             }
         }
+        
+        error_log('Auth header: ' . ($authHeader ? substr($authHeader, 0, 50) : 'none'));
         
         if (!$authHeader) {
             return null;

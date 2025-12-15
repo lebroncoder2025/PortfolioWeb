@@ -274,6 +274,7 @@ function requireAuth() {
     try {
         return JWT::verifyAndGetUser();
     } catch (Exception $e) {
+        error_log('Auth error: ' . $e->getMessage());
         errorResponse('Unauthorized: ' . $e->getMessage(), 401);
     }
 }
