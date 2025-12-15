@@ -175,6 +175,10 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
   const [activeTab, setActiveTab] = useState('hero');
   const [currentUser, setCurrentUser] = useState(null);
 
+  const headerRef = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [tabsSticky, setTabsSticky] = useState(true);
+
   // Decode JWT to get user role
   React.useEffect(() => {
     const token = localStorage.getItem('token');
@@ -186,6 +190,19 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
         console.error('Failed to decode token', e);
       }
     }
+  }, []);
+
+  // Measure header height and decide whether tabs should be sticky
+  useEffect(() => {
+    const measure = () => {
+      const h = headerRef.current ? headerRef.current.offsetHeight : 64;
+      setHeaderHeight(h);
+      // Disable sticky on very small screens to avoid overlap issues
+      setTabsSticky(window.innerWidth >= 640);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
   const tabs = [
     { id: 'hero', label: 'Hero', icon: '🎬' },
@@ -205,35 +222,36 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
   return (
     <div className="min-h-screen relative" style={{ backgroundColor: colors.linen, zIndex: 100 }}>
       {/* Top Bar */}
-      <div className="bg-white shadow-lg sticky top-0 z-[100]" style={{ borderBottom: `4px solid ${colors.gold}` }}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center gap-4 sm:px-3 sm:py-2 sm:flex-wrap">
+      <div ref={headerRef} className="bg-white shadow-lg sticky top-0 z-[100]" style={{ borderBottom: `4px solid ${colors.gold}` }}>
+        <div className="max-w-7xl mx-auto px-3 py-2 flex flex-wrap justify-between items-center gap-3">
           <h1 className="text-2xl font-bold flex items-center gap-2 sm:text-xl sm:gap-1" style={{ color: colors.gold }}>
-            <span>⚙️</span> <span className="hidden sm:inline">Panel</span><span className="hidden xs:inline">Admin</span>
+            <span>⚙️</span>
+            <span className="hidden sm:inline">Panel Admin</span>
           </h1>
-          <div className="flex items-center gap-4 sm:gap-2">
+          <div className="flex items-center gap-3">
             {currentUser && (
-              <div className="flex items-center gap-3 px-4 py-2 rounded-lg sm:px-2 sm:py-1 sm:flex-col sm:gap-1" style={{ backgroundColor: colors.cream }}>
-                <span className="text-xl sm:text-lg">{currentUser.role === 'admin' ? '👑' : '👤'}</span>
-                <div className="text-sm sm:text-xs sm:text-center">
-                  <p className="font-semibold sm:text-xs" style={{ color: colors.darkGray }}>{currentUser.email}</p>
-                  <p className="text-xs sm:text-xs" style={{ color: colors.brown }}>{currentUser.role === 'admin' ? 'Admin' : 'Mod'}</p>
+              <div className="flex items-center gap-2 px-3 py-1 rounded-lg" style={{ backgroundColor: colors.cream }}>
+                <span className="text-lg">{currentUser.role === 'admin' ? '👑' : '👤'}</span>
+                <div className="text-sm text-left">
+                  <p className="font-semibold" style={{ color: colors.darkGray }}>{currentUser.email}</p>
+                  <p className="text-xs" style={{ color: colors.brown }}>{currentUser.role === 'admin' ? 'Admin' : 'Mod'}</p>
                 </div>
               </div>
             )}
             <button
               onClick={onLogout}
-              className="px-5 py-2 rounded-lg text-white font-semibold transition duration-300 hover:shadow-lg hover:scale-105 active:scale-95 sm:px-3 sm:py-1 sm:text-sm"
+              className="px-3 py-1 rounded-lg text-white font-semibold transition duration-300 hover:shadow-lg hover:scale-105 active:scale-95 text-sm"
               style={{ backgroundColor: colors.brown }}
               onMouseEnter={(e) => e.target.style.boxShadow = `0 8px 16px rgba(139,115,85,0.3)`}
               onMouseLeave={(e) => e.target.style.boxShadow = 'none'}
             >
-              🚪 <span className="hidden sm:inline">X</span><span className="sm:hidden">Wyloguj</span>
+              🚪 <span className="ml-1">Wyloguj</span>
             </button>
           </div>
         </div>
       </div>
       {/* Navigation Tabs */}
-      <div className="bg-white shadow-sm sticky top-16 z-[90]" style={{ borderBottom: `2px solid ${colors.cream}` }}>
+      <div className="bg-white shadow-sm" style={{ borderBottom: `2px solid ${colors.cream}`, position: tabsSticky ? 'sticky' : 'static', top: tabsSticky ? `${headerHeight}px` : 'auto', zIndex: 90 }}>
         <div className="max-w-7xl mx-auto px-6 sm:px-2">
           <div className="flex gap-1 overflow-x-auto py-3 scrollbar-hide">
             {tabs.map(tab => (
@@ -249,7 +267,7 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
                 }}
               >
                 <span>{tab.icon}</span>
-                <span className="hidden sm:inline">{tab.label.substring(0, 3)}</span><span className="sm:hidden">{tab.label}</span>
+                <span className="inline sm:hidden">{tab.label.substring(0, 3)}</span><span className="hidden sm:inline">{tab.label}</span>
               </button>
             ))}
           </div>
