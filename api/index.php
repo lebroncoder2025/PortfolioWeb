@@ -47,6 +47,12 @@ if (preg_match('#^/([a-zA-Z0-9_\-]+\.php)$#', $uri, $m)) {
     }
 }
 
+// Migration endpoint (can be called from admin panel or directly)
+if ($uri === '/migrate' && $method === 'POST') {
+    require __DIR__ . '/migrate-to-blob.php';
+    exit;
+}
+
 // Route the request
 try {
     // Public routes (no auth required)
