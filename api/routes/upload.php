@@ -27,9 +27,13 @@ function handleUpload($user) {
         ]);
         
         // Return image ID for use in portfolio items
+        // Use full API URL so frontend on GitHub Pages can fetch it
+        $apiUrl = getenv('API_URL') ?: 'https://portfolio-api.example.com/api';
+        $imageUrl = $apiUrl . '/image/' . $imageId;
+        
         jsonResponse([
             'id' => $imageId,
-            'url' => '/image/' . $imageId,
+            'url' => $imageUrl,
             'filename' => $uploadResult['filename']
         ]);
     } catch (Exception $e) {

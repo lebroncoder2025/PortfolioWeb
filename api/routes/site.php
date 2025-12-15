@@ -179,7 +179,8 @@ function updateHero($user) {
                 'image_data' => $image['imageData'],
                 'uploaded_at' => date('Y-m-d H:i:s')
             ]);
-            $image = '/image/' . $imgId;
+            $apiUrl = getenv('API_URL') ?: 'https://portfolio-api.example.com/api';
+            $image = $apiUrl . '/image/' . $imgId;
         }
     }
     
@@ -233,7 +234,8 @@ function updateAbout($user) {
                 'image_data' => $image['imageData'],
                 'uploaded_at' => date('Y-m-d H:i:s')
             ]);
-            $image = '/image/' . $imgId;
+            $apiUrl = getenv('API_URL') ?: 'https://portfolio-api.example.com/api';
+            $image = $apiUrl . '/image/' . $imgId;
         }
     }
     
@@ -508,7 +510,8 @@ function createPortfolioItem($db, $user) {
                 'image_data' => $uploaded['imageData'],
                 'uploaded_at' => date('Y-m-d H:i:s')
             ]);
-            $uploadedUrl = '/image/' . $imgId;
+            $apiUrl = getenv('API_URL') ?: 'https://portfolio-api.example.com/api';
+            $uploadedUrl = $apiUrl . '/image/' . $imgId;
         } elseif (is_string($uploaded) && $uploaded) {
             $uploadedUrl = $uploaded;
         }
@@ -615,7 +618,8 @@ function updatePortfolioItem($db, $id, $user) {
                 'image_data' => $uploaded['imageData'],
                 'uploaded_at' => date('Y-m-d H:i:s')
             ]);
-            $uploadedUrl = '/image/' . $imgId;
+            $apiUrl = getenv('API_URL') ?: 'https://portfolio-api.example.com/api';
+            $uploadedUrl = $apiUrl . '/image/' . $imgId;
         } elseif (is_string($uploaded) && $uploaded) {
             $uploadedUrl = $uploaded;
         }
