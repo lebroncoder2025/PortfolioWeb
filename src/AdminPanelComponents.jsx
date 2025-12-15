@@ -592,8 +592,20 @@ const ServicesEditor = ({ siteData, setSiteData }) => {
     newServices[idx] = { ...newServices[idx], [field]: value };
     setServices(newServices);
   };
-  const deleteService = (idx) => {
-    setServices(services.filter((_, i) => i !== idx));
+  const deleteService = async (idx) => {
+    if (window.confirm('Czy na pewno chcesz usunąć tę usługę?')) {
+      try {
+        const serviceToDelete = services[idx];
+        await deleteItemFromApi('services', serviceToDelete.id);
+        setServices(services.filter((_, i) => i !== idx));
+        setSiteData({ ...siteData, services: services.filter((_, i) => i !== idx) });
+        setMessage({ type: 'success', text: '✅ Usługa usunięta!' });
+        setTimeout(() => setMessage(null), 3000);
+      } catch (err) {
+        setMessage({ type: 'error', text: '❌ Błąd usuwania!' });
+        console.error('Delete error:', err);
+      }
+    }
   };
   const handleSave = async () => {
     setSaving(true);
@@ -722,9 +734,19 @@ const PortfolioEditor = ({ siteData, setSiteData }) => {
     newPortfolio[idx] = { ...newPortfolio[idx], [field]: value };
     setPortfolio(newPortfolio);
   };
-  const deleteItem = (idx) => {
+  const deleteItem = async (idx) => {
     if (window.confirm('Czy na pewno chcesz usunąć ten projekt?')) {
-      setPortfolio(portfolio.filter((_, i) => i !== idx));
+      try {
+        const itemToDelete = portfolio[idx];
+        await deleteItemFromApi('portfolio', itemToDelete.id);
+        setPortfolio(portfolio.filter((_, i) => i !== idx));
+        setSiteData({ ...siteData, portfolio: portfolio.filter((_, i) => i !== idx) });
+        setMessage({ type: 'success', text: '✅ Projekt usunięty!' });
+        setTimeout(() => setMessage(null), 3000);
+      } catch (err) {
+        setMessage({ type: 'error', text: '❌ Błąd usuwania!' });
+        console.error('Delete error:', err);
+      }
     }
   };
   const handleImageUpload = async (idx, file) => {

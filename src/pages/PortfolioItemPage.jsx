@@ -175,9 +175,9 @@ export default function PortfolioItemPage({ siteData = {} }) {
                 ) : (
                   // Inne media - z białym tłem
                   <div className="md:col-span-2 lg:col-span-3 bg-white rounded-xl overflow-visible shadow-lg hover:shadow-xl transition-shadow"
-                       style={{ cursor: inferKind(featured.url) === 'image' ? 'pointer' : 'default' }}
+                       style={{ cursor: (inferKind(featured.url) === 'image' || inferKind(featured.url) === 'video') ? 'pointer' : 'default' }}
                        onClick={(e) => {
-                         if (inferKind(featured.url) === 'image') {
+                         if (inferKind(featured.url) === 'image' || inferKind(featured.url) === 'video') {
                            e.stopPropagation();
                            const index = media.findIndex(m => m.url === featured.url);
                            setLightboxStartIndex(index >= 0 ? index : 0);
@@ -186,9 +186,9 @@ export default function PortfolioItemPage({ siteData = {} }) {
                        }}>
                     <div className="aspect-video w-full relative group">
                       {renderMedia(featured, 'featured', '')}
-                      {inferKind(featured.url) === 'image' && (
+                      {(inferKind(featured.url) === 'image' || inferKind(featured.url) === 'video') && (
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
-                          <div className="text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity">🔍</div>
+                          <div className="text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity">{inferKind(featured.url) === 'video' ? '▶️' : '🔍'}</div>
                         </div>
                       )}
                     </div>
