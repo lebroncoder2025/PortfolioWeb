@@ -196,7 +196,14 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
     const compute = () => {
       const topH = topBarRef.current ? topBarRef.current.offsetHeight : 0;
       const navH = navRef.current ? navRef.current.offsetHeight : 0;
-      setRootPaddingTop(topH + navH + 8); // small gap
+      // Calculate padding but cap it to avoid excessive empty space on small devices
+      let total = topH + navH + 8;
+      if (window.innerWidth < 640) {
+        total = Math.min(total, 72); // cap to ~72px on small screens
+      } else {
+        total = Math.min(total, 120); // reasonable cap for larger screens
+      }
+      setRootPaddingTop(total);
     };
     compute();
     window.addEventListener('resize', compute);
@@ -268,7 +275,7 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
       <div ref={navRef} className="bg-white shadow-sm" style={{ borderBottom: `2px solid ${colors.cream}` }}>
         <div className="max-w-7xl mx-auto px-4">
           {/* On small screens allow wrapping; on md+ keep single row with horizontal scroll */}
-          <div className="flex flex-wrap gap-2 overflow-hidden py-2 scrollbar-hide md:overflow-x-auto md:flex-nowrap">
+          <div className="grid grid-cols-2 gap-2 py-2 scrollbar-hide md:flex md:flex-nowrap md:overflow-x-auto">
             {tabs.map(tab => (
               <button
                 key={tab.id}
