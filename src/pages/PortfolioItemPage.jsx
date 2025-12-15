@@ -95,6 +95,26 @@ export default function PortfolioItemPage({ siteData = {} }) {
     }
 
     if (kind === 'video') {
+      // Dla featured video, pokaż thumbnail zamiast pełnego video, żeby uniknąć duplikacji w lightbox
+      if (idx === 'featured') {
+        return (
+          <div className="w-full h-full bg-gray-900 flex items-center justify-center relative">
+            <video
+              muted
+              preload="metadata"
+              className="w-full h-full object-cover"
+              style={{ filter: 'brightness(0.7)' }}
+              src={url}
+              onError={(e) => {
+                console.error('Video load error:', url, e);
+              }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-white text-6xl opacity-80">▶️</div>
+            </div>
+          </div>
+        );
+      }
       return (
         <video 
           controls 
