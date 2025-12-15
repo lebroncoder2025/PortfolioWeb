@@ -49,7 +49,7 @@ export default function PortfolioItemPage({ siteData = {} }) {
     if (!u) return 'unknown';
     if (u.includes('youtube.com') || u.includes('youtu.be')) return 'youtube';
     if (u.includes('tiktok.com')) return 'tiktok';
-    if (u.endsWith('.mp4') || u.endsWith('.webm')) return 'video';
+    if (u.includes('/api/video/') || u.endsWith('.mp4') || u.endsWith('.webm') || u.match(/\.(mp4|webm|mov|avi|m4v)(\?|#|$)/i)) return 'video';
     return 'image';
   };
 
