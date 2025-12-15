@@ -252,19 +252,24 @@ function handleFileUpload($file, $fieldName = 'file') {
         throw new Exception('File type not allowed');
     }
     
-    // Generate unique filename
+    // Generate unique filename and read file content
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
     $baseName = pathinfo($file['name'], PATHINFO_FILENAME);
     $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '', $baseName);
     $filename = $safeName . '-' . time() . '.' . $ext;
     
-    $destination = UPLOAD_DIR . $filename;
-    
-    if (!move_uploaded_file($file['tmp_name'], $destination)) {
-        throw new Exception('Failed to save uploaded file');
+    // Read file content for BLOB storage
+    $imageData = file_get_contents($file['tmp_name']);
+    if ($imageData === false) {
+        throw new Exception('Failed to read uploaded file');
     }
     
-    return '/uploads/' . $filename;
+    // Return array with filename and image data (BLOB)
+    return [
+        'filename' => $filename,
+        'mimeType' => $mimeType,
+        'imageData' => $imageData
+    ];
 }
 
 /**
@@ -280,11 +285,66 @@ function requireAuth() {
 }
 
 /**
- * Require admin role
+ * Commit uploaded file to GitHub repo for GitHub Pages access
  */
-function requireAdmin($user) {
-    if (!isset($user['role']) || $user['role'] !== 'admin') {
-        errorResponse('Admin access required', 403);
+function commitFileToGitHub($filename, $filePath) {
+    $repo = 'lebroncoder2025/PortfolioWeb';
+    $branch = 'main';
+    $token = getenv('GITHUB_TOKEN');
+    
+    if (!$token) {
+        error_log('GITHUB_TOKEN not set, skipping GitHub commit');
+        return;
+    }
+    
+    $fileContent = base64_encode(file_get_contents($filePath));
+    $apiUrl = "https://api.github.com/repos/{$repo}/contents/uploads/{$filename}";
+    
+    // Check if file exists
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Authorization: token {$token}",
+        "User-Agent: Portfolio-API"
+    ]);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    $data = [
+        'message' => 'Upload image: ' . $filename,
+        'content' => $fileContent,
+        'branch' => $branch
+    ];
+    
+    if ($httpCode === 200) {
+        // File exists, get SHA for update
+        $existing = json_decode($response, true);
+        $data['sha'] = $existing['sha'];
+    }
+    
+    // Create or update file
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $httpCode === 200 ? 'PUT' : 'PUT');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Authorization: token {$token}",
+        "User-Agent: Portfolio-API",
+        "Content-Type: application/json"
+    ]);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($httpCode !== 201 && $httpCode !== 200) {
+        error_log('GitHub API error: ' . $response);
+    } else {
+        error_log('File committed to GitHub: ' . $filename);
     }
 }
 

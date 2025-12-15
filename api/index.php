@@ -54,6 +54,11 @@ try {
         require __DIR__ . '/routes/site.php';
         getSiteData();
     }
+    // Image serving (public)
+    elseif (preg_match('#^/image/([a-f0-9\-]+)$#i', $uri, $m)) {
+        require __DIR__ . '/routes/image.php';
+        serveImage($m[1]);
+    }
     // Login
     elseif ($uri === '/login' && $method === 'POST') {
         require __DIR__ . '/routes/auth.php';
