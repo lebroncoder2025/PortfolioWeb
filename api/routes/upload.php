@@ -26,14 +26,18 @@ function handleUpload($user) {
             'uploaded_at' => date('Y-m-d H:i:s')
         ]);
         
-        // Return image ID for use in portfolio items
+        // Return media ID for use in portfolio items
         // Use full API URL so frontend on GitHub Pages can fetch it
         $apiUrl = getenv('API_URL') ?: 'https://portfolio-api.example.com/api';
-        $imageUrl = $apiUrl . '/image/' . $imageId;
+        
+        // Determine endpoint based on MIME type
+        $isVideo = strpos($uploadResult['mimeType'], 'video/') === 0;
+        $endpoint = $isVideo ? 'video' : 'image';
+        $mediaUrl = $apiUrl . '/' . $endpoint . '/' . $imageId;
         
         jsonResponse([
             'id' => $imageId,
-            'url' => $imageUrl,
+            'url' => $mediaUrl,
             'filename' => $uploadResult['filename']
         ]);
     } catch (Exception $e) {
