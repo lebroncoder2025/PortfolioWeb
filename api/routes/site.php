@@ -585,12 +585,14 @@ function updatePortfolioItem($db, $id, $user) {
         errorResponse('Portfolio item not found', 404);
     }
     
-    $title = $_POST['title'] ?? $existing['title'];
-    $category = $_POST['category'] ?? $existing['category'];
-    $video = $_POST['video'] ?? $existing['video'];
-    $order = $_POST['order'] ?? $existing['order'];
-    $images = $_POST['images'] ?? null;
-    $featuredMedia = $_POST['featuredMedia'] ?? null;
+    $data = getJsonBody();
+    
+    $title = $data['title'] ?? $existing['title'];
+    $category = $data['category'] ?? $existing['category'];
+    $video = $data['video'] ?? $existing['video'];
+    $order = $data['order'] ?? $existing['order'];
+    $images = $data['images'] ?? null;
+    $featuredMedia = $data['featuredMedia'] ?? null;
     
     // Parse images
     $imagesArray = [];
