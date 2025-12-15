@@ -120,7 +120,7 @@ export default function HomePage({ siteData = {} }) {
               {recentPortfolio.map((item, idx) => (
                 <div key={idx} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all cursor-pointer border-t-4" 
                      style={{ borderColor: colors.gold }}
-                     onClick={() => navigate(`/portfolio/${item.id || idx}`)}>
+                     onClick={() => navigate(`/portfolio/${item.category}/${item.id}`)}>
                   {item.featured?.url ? (
                     <img src={item.featured.url} alt={item.title} className="w-full h-48 object-cover" />
                   ) : (
