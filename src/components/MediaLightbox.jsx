@@ -50,7 +50,7 @@ export default function MediaLightbox({ isOpen, media, title, onClose, initialIn
     if (!u) return 'unknown';
     if (u.includes('youtube.com') || u.includes('youtu.be')) return 'youtube';
     if (u.includes('tiktok.com')) return 'tiktok';
-    if (u.endsWith('.mp4') || u.endsWith('.webm')) return 'video';
+    if (u.includes('/api/video/') || u.endsWith('.mp4') || u.endsWith('.webm') || u.match(/\.(mp4|webm|mov|avi|m4v)(\?|#|$)/i)) return 'video';
     return 'image';
   };
 
@@ -103,7 +103,6 @@ export default function MediaLightbox({ isOpen, media, title, onClose, initialIn
           preload="metadata"
           className="w-full h-auto"
           style={{ maxWidth: '100%', maxHeight: '85vh', backgroundColor: '#000' }}
-          autoPlay
         >
           <source src={url} type="video/mp4" />
           <source src={url} type="video/webm" />

@@ -42,20 +42,33 @@ const saveItemToApi = async (endpointBase, item) => {
   try {
     const id = item.id;
     let res;
-    if (id && id.toString().length > 3) {
+    // Check if ID looks like a UUID (36 chars with dashes) or is a real database ID
+    // If it's a timestamp-based ID (like Date.now()), treat as new item
+    const isExistingItem = id && id.toString().length === 36 && id.includes('-');
+    
+    if (isExistingItem) {
       res = await fetch(`${API_URL}/site/${endpointBase}/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(item)
       });
     } else {
+      // Remove the temporary ID for new items
+      const itemToSend = { ...item };
+      delete itemToSend.id;
+      
       res = await fetch(`${API_URL}/site/${endpointBase}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-        body: JSON.stringify(item)
+        body: JSON.stringify(itemToSend)
       });
     }
     if (res && res.ok) {
+      const savedItem = await res.json();
+      // Update the item with the real ID from server
+      if (!isExistingItem && savedItem.id) {
+        item.id = savedItem.id;
+      }
       try { window.dispatchEvent(new Event('site-updated')); } catch (e) { /* ignore */ }
     }
     return res;
@@ -1367,8 +1380,27 @@ const CategoriesEditor = ({ siteData, setSiteData }) => {
     newCategories[idx] = { ...newCategories[idx], [field]: value };
     setCategories(newCategories);
   };
-  const deleteCategory = (idx) => {
-    setCategories(categories.filter((_, i) => i !== idx));
+  const deleteCategory = async (idx) => {
+    if (window.confirm('Czy na pewno chcesz usunąć tę kategorię?')) {
+      try {
+        const newCategories = categories.filter((_, i) => i !== idx);
+        const res = await fetch(`${API_URL}/site/categories`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+          body: JSON.stringify(newCategories)
+        });
+        if (res.ok) {
+          setCategories(newCategories);
+          setSiteData({ ...siteData, categories: newCategories });
+          try { window.dispatchEvent(new Event('site-updated')); } catch(e) {}
+          setMessage({ type: 'success', text: '✅ Kategoria usunięta!' });
+          setTimeout(() => setMessage(null), 3000);
+        }
+      } catch (err) {
+        setMessage({ type: 'error', text: '❌ Błąd usuwania!' });
+        console.error('Delete error:', err);
+      }
+    }
   };
   const handleSave = async () => {
     setSaving(true);
