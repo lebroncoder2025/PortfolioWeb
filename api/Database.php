@@ -51,7 +51,7 @@ class Database {
     }
     
     public function insert($table, $data) {
-        $columns = implode(', ', array_keys($data));
+        $columns = '`' . implode('`, `', array_keys($data)) . '`';
         $placeholders = implode(', ', array_fill(0, count($data), '?'));
         
         $sql = "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
@@ -61,7 +61,7 @@ class Database {
     }
     
     public function update($table, $data, $where, $whereParams = []) {
-        $set = implode(' = ?, ', array_keys($data)) . ' = ?';
+        $set = '`' . implode('` = ?, `', array_keys($data)) . '` = ?';
         
         $sql = "UPDATE {$table} SET {$set} WHERE {$where}";
         $params = array_merge(array_values($data), $whereParams);
