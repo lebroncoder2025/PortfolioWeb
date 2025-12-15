@@ -18,6 +18,8 @@ COPY api/nginx.conf /etc/nginx/conf.d/portfolio.conf
 
 RUN chown -R www-data:www-data /var/www/html
 
+RUN mkdir -p /var/www/uploads && chown -R www-data:www-data /var/www/uploads
+
 COPY api/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
