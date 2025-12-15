@@ -169,6 +169,18 @@ function updateHero($user) {
     
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $image = handleFileUpload($_FILES['image']);
+        // If handleFileUpload returned binary data, persist to portfolio_uploads and use /image/{id} URL
+        if (is_array($image) && !empty($image['imageData'])) {
+            $imgId = generateUUID();
+            $db->insert('portfolio_uploads', [
+                'id' => $imgId,
+                'filename' => $image['filename'],
+                'mime_type' => $image['mimeType'],
+                'image_data' => $image['imageData'],
+                'uploaded_at' => date('Y-m-d H:i:s')
+            ]);
+            $image = '/image/' . $imgId;
+        }
     }
     
     $db->query(
@@ -211,6 +223,18 @@ function updateAbout($user) {
     
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $image = handleFileUpload($_FILES['image']);
+        // Persist binary upload to portfolio_uploads and set URL
+        if (is_array($image) && !empty($image['imageData'])) {
+            $imgId = generateUUID();
+            $db->insert('portfolio_uploads', [
+                'id' => $imgId,
+                'filename' => $image['filename'],
+                'mime_type' => $image['mimeType'],
+                'image_data' => $image['imageData'],
+                'uploaded_at' => date('Y-m-d H:i:s')
+            ]);
+            $image = '/image/' . $imgId;
+        }
     }
     
     $statsJson = null;
@@ -473,7 +497,21 @@ function createPortfolioItem($db, $user) {
     
     // Handle file upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $uploadedUrl = handleFileUpload($_FILES['image']);
+        $uploaded = handleFileUpload($_FILES['image']);
+        $uploadedUrl = null;
+        if (is_array($uploaded) && !empty($uploaded['imageData'])) {
+            $imgId = generateUUID();
+            $db->insert('portfolio_uploads', [
+                'id' => $imgId,
+                'filename' => $uploaded['filename'],
+                'mime_type' => $uploaded['mimeType'],
+                'image_data' => $uploaded['imageData'],
+                'uploaded_at' => date('Y-m-d H:i:s')
+            ]);
+            $uploadedUrl = '/image/' . $imgId;
+        } elseif (is_string($uploaded) && $uploaded) {
+            $uploadedUrl = $uploaded;
+        }
         if ($uploadedUrl) {
             $imagesArray[] = ['url' => $uploadedUrl, 'caption' => ''];
         }
@@ -566,7 +604,21 @@ function updatePortfolioItem($db, $id, $user) {
     
     // Handle file upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $uploadedUrl = handleFileUpload($_FILES['image']);
+        $uploaded = handleFileUpload($_FILES['image']);
+        $uploadedUrl = null;
+        if (is_array($uploaded) && !empty($uploaded['imageData'])) {
+            $imgId = generateUUID();
+            $db->insert('portfolio_uploads', [
+                'id' => $imgId,
+                'filename' => $uploaded['filename'],
+                'mime_type' => $uploaded['mimeType'],
+                'image_data' => $uploaded['imageData'],
+                'uploaded_at' => date('Y-m-d H:i:s')
+            ]);
+            $uploadedUrl = '/image/' . $imgId;
+        } elseif (is_string($uploaded) && $uploaded) {
+            $uploadedUrl = $uploaded;
+        }
         if ($uploadedUrl) {
             $imagesArray[] = ['url' => $uploadedUrl, 'caption' => ''];
         }
