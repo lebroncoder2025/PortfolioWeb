@@ -299,7 +299,7 @@ const HeroEditor = ({ siteData, setSiteData }) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => setFormData({ ...formData, image: e.target.result });
+      reader.onload = (e) => setFormData({ ...formData, tempImagePreview: e.target.result });
       reader.readAsDataURL(file);
     }
   };
@@ -318,7 +318,16 @@ const HeroEditor = ({ siteData, setSiteData }) => {
         body: formDataObj
       });
       if (res.ok) {
-        setSiteData({ ...siteData, hero: formData });
+        const data = await res.json();
+        // Update formData with server response - use /image/{id} URL if provided
+        const updatedFormData = { ...formData };
+        if (data.image) {
+          updatedFormData.image = data.image;
+        }
+        delete updatedFormData.tempImagePreview;
+        fileInputRef.current.value = '';
+        setSiteData({ ...siteData, hero: updatedFormData });
+        setFormData(updatedFormData);
         setMessage({ type: 'success', text: '✅ Zapisano!' });
         setTimeout(() => setMessage(null), 3000);
       } else {
@@ -356,9 +365,9 @@ const HeroEditor = ({ siteData, setSiteData }) => {
       </div>
       <div>
         <label className="block font-semibold mb-3 text-lg" style={{ color: colors.darkGray }}>Zdjęcie profilowe</label>
-        {formData.image && (
+        {(formData.tempImagePreview || formData.image) && (
           <div className="mb-4">
-            <img src={formData.image} alt="preview" className="w-32 h-32 rounded-full object-cover border-4 shadow-md" style={{ borderColor: colors.gold }} />
+            <img src={formData.tempImagePreview || formData.image} alt="preview" className="w-32 h-32 rounded-full object-cover border-4 shadow-md" style={{ borderColor: colors.gold }} />
           </div>
         )}
         <input
@@ -392,7 +401,7 @@ const AboutEditor = ({ siteData, setSiteData }) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => setFormData({ ...formData, image: e.target.result });
+      reader.onload = (e) => setFormData({ ...formData, tempImagePreview: e.target.result });
       reader.readAsDataURL(file);
     }
   };
@@ -411,7 +420,15 @@ const AboutEditor = ({ siteData, setSiteData }) => {
         body: formDataObj
       });
       if (res.ok) {
-        setSiteData({ ...siteData, about: formData });
+        const data = await res.json();
+        const updatedFormData = { ...formData };
+        if (data.image) {
+          updatedFormData.image = data.image;
+        }
+        delete updatedFormData.tempImagePreview;
+        fileInputRef.current.value = '';
+        setSiteData({ ...siteData, about: updatedFormData });
+        setFormData(updatedFormData);
         setMessage({ type: 'success', text: '✅ Zapisano!' });
         setTimeout(() => setMessage(null), 3000);
       }
@@ -457,9 +474,9 @@ const AboutEditor = ({ siteData, setSiteData }) => {
       </div>
       <div>
         <label className="block font-semibold mb-3 text-lg" style={{ color: colors.darkGray }}>Zdjęcie</label>
-        {formData.image && (
+        {(formData.tempImagePreview || formData.image) && (
           <div className="mb-4">
-            <img src={formData.image} alt="preview" className="w-40 h-40 rounded-xl object-cover shadow-md" />
+            <img src={formData.tempImagePreview || formData.image} alt="preview" className="w-40 h-40 rounded-xl object-cover shadow-md" />
           </div>
         )}
         <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-5 file:rounded-lg file:font-semibold file:cursor-pointer" />
