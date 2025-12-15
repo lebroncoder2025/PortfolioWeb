@@ -174,6 +174,9 @@ export const LoginPage = ({ onLogin }) => {
 export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
   const [activeTab, setActiveTab] = useState('hero');
   const [currentUser, setCurrentUser] = useState(null);
+  const topBarRef = useRef(null);
+  const navRef = useRef(null);
+  const [rootPaddingTop, setRootPaddingTop] = useState(0);
 
   // Decode JWT to get user role
   React.useEffect(() => {
@@ -186,6 +189,18 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
         console.error('Failed to decode token', e);
       }
     }
+  }, []);
+
+  // Compute padding to avoid sticky header/nav overlapping content
+  useEffect(() => {
+    const compute = () => {
+      const topH = topBarRef.current ? topBarRef.current.offsetHeight : 0;
+      const navH = navRef.current ? navRef.current.offsetHeight : 0;
+      setRootPaddingTop(topH + navH + 8); // small gap
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
   }, []);
   const tabs = [
     { id: 'hero', label: 'Hero', icon: '🎬' },
@@ -203,9 +218,9 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
   ];
 
   return (
-    <div className="min-h-screen relative" style={{ backgroundColor: colors.linen, paddingTop: 96 }}>
+    <div className="min-h-screen relative" style={{ backgroundColor: colors.linen, paddingTop: rootPaddingTop }}>
       {/* Top Bar */}
-      <div className="bg-white shadow-lg" style={{ borderBottom: `4px solid ${colors.gold}` }}>
+      <div ref={topBarRef} className="bg-white shadow-lg" style={{ borderBottom: `4px solid ${colors.gold}` }}>
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
           <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: colors.gold }}>
             <span>⚙️ Panel Admin</span>
@@ -231,7 +246,7 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
       </div>
       
       {/* Navigation Tabs */}
-      <div className="bg-white shadow-sm" style={{ borderBottom: `2px solid ${colors.cream}` }}>
+      <div ref={navRef} className="bg-white shadow-sm" style={{ borderBottom: `2px solid ${colors.cream}` }}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-2 overflow-x-auto py-2 scrollbar-hide">
             {tabs.map(tab => (

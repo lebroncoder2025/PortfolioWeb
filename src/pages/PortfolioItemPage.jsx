@@ -107,11 +107,10 @@ export default function PortfolioItemPage({ siteData = {} }) {
             margin: '0 auto'
           }}
           onError={(e) => {
-            console.error('Video load error:', url);
+            console.error('Video load error:', url, e);
           }}
+          src={url}
         >
-          <source src={url} type="video/mp4" />
-          <source src={url} type="video/webm" />
           Twoja przeglądarka nie obsługuje odtwarzania video.
         </video>
       );
