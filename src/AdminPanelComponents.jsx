@@ -199,7 +199,8 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
       // Calculate padding but cap it to avoid excessive empty space on small devices
       let total = topH + navH + 8;
       if (window.innerWidth < 640) {
-        total = Math.min(total, 72); // cap to ~72px on small screens
+        // no extra top padding on small screens
+        total = 0;
       } else {
         total = Math.min(total, 120); // reasonable cap for larger screens
       }
@@ -280,7 +281,7 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-1/2 md:w-auto px-3 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 justify-center ${
+                className={`w-full md:w-auto px-3 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 justify-center ${
                   activeTab === tab.id ? 'text-white shadow-md' : 'hover:bg-gray-100'
                 }`}
                 style={{
