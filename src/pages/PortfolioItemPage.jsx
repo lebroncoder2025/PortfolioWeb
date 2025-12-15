@@ -96,7 +96,6 @@ export default function PortfolioItemPage({ siteData = {} }) {
     if (kind === 'video') {
       return (
         <video 
-          src={url} 
           controls 
           playsInline
           preload="metadata"
