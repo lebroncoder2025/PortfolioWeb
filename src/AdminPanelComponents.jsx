@@ -71,6 +71,20 @@ const saveAllItems = async (endpointBase, items) => {
   }
   try { window.dispatchEvent(new Event('site-updated')); } catch (e) { /* ignore */ }
 };
+
+const deleteItemFromApi = async (endpointBase, id) => {
+  try {
+    const res = await fetch(`${API_URL}/site/${endpointBase}/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error(`Failed to delete ${endpointBase} ${id}:`, err);
+    throw err;
+  }
+};
 // ==================== LOGIN PAGE ====================
 export const LoginPage = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -585,6 +599,20 @@ const ServicesEditor = ({ siteData, setSiteData }) => {
     setSaving(true);
     try {
       await saveAllItems('services', services);
+      
+      // Delete items that were removed
+      const currentIds = new Set(services.map(s => s.id));
+      const originalItems = siteData.services || [];
+      const toDelete = originalItems.filter(item => !currentIds.has(item.id));
+      
+      for (const item of toDelete) {
+        try {
+          await deleteItemFromApi('services', item.id);
+        } catch (err) {
+          console.error(`Failed to delete service ${item.id}:`, err);
+        }
+      }
+      
       setSiteData({ ...siteData, services });
       setMessage({ type: 'success', text: '✅ Zapisano!' });
       setTimeout(() => setMessage(null), 3000);
@@ -743,7 +771,22 @@ const PortfolioEditor = ({ siteData, setSiteData }) => {
   const handleSave = async () => {
     setSaving(true);
     try {
+      // Save all current items
       await saveAllItems('portfolio', portfolio);
+      
+      // Delete items that were removed (check if they exist in original siteData but not in current portfolio)
+      const currentIds = new Set(portfolio.map(p => p.id));
+      const originalItems = siteData.portfolio || [];
+      const toDelete = originalItems.filter(item => !currentIds.has(item.id));
+      
+      for (const item of toDelete) {
+        try {
+          await deleteItemFromApi('portfolio', item.id);
+        } catch (err) {
+          console.error(`Failed to delete portfolio item ${item.id}:`, err);
+        }
+      }
+      
       setSiteData({ ...siteData, portfolio });
       setMessage({ type: 'success', text: '✅ Zapisano zmiany w portfolio!' });
       setTimeout(() => setMessage(null), 3000);

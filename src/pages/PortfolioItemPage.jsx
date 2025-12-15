@@ -219,13 +219,13 @@ export default function PortfolioItemPage({ siteData = {} }) {
             {/* Image Gallery */}
             {media.map((m, idx) => {
               const mediaKind = inferKind(m.url);
-              const isClickable = mediaKind === 'image' || mediaKind === 'tiktok';
+              const isClickable = mediaKind === 'image' || mediaKind === 'video' || mediaKind === 'tiktok';
               
               return (
               <div key={idx} className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
                    style={{ cursor: isClickable ? 'pointer' : 'default' }}
                    onClick={(e) => {
-                     if (mediaKind === 'image') {
+                     if (mediaKind === 'image' || mediaKind === 'video') {
                        e.stopPropagation();
                        setLightboxStartIndex(idx);
                        setIsLightboxOpen(true);
@@ -242,10 +242,10 @@ export default function PortfolioItemPage({ siteData = {} }) {
                       ) : (
                         <div className="w-full h-full">{renderMedia(m, idx, '')}</div>
                       )}
-                      {/* Lupa tylko dla zdjęć */}
-                      {mediaKind === 'image' && (
+                      {/* Lupa dla zdjęć i video */}
+                      {(mediaKind === 'image' || mediaKind === 'video') && (
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
-                          <div className="text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity">🔍</div>
+                          <div className="text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity">{mediaKind === 'video' ? '▶️' : '🔍'}</div>
                         </div>
                       )}
                     </>
