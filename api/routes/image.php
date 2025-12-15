@@ -20,7 +20,10 @@ function serveImage($id) {
         errorResponse('Image not found', 404);
     }
     
-    // Stream image with correct headers
+    // Stream image with correct headers and allow cross-origin usage
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Headers: Range, Content-Type, Accept');
+    header('Access-Control-Expose-Headers: Accept-Ranges, Content-Range');
     header('Content-Type: ' . ($image['mime_type'] ?: 'application/octet-stream'));
     header('Cache-Control: public, max-age=86400');
     echo $image['image_data'];

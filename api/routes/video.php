@@ -24,6 +24,10 @@ function serveVideo($id) {
     $filesize = strlen($video['image_data']);
     $mimeType = $video['mime_type'] ?: 'video/mp4';
     
+    // Allow cross-origin streaming (useful when frontend and API are on different origins)
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Headers: Range, Content-Type, Accept');
+    header('Access-Control-Expose-Headers: Accept-Ranges, Content-Range');
     header('Content-Type: ' . $mimeType);
     header('Content-Length: ' . $filesize);
     header('Accept-Ranges: bytes');

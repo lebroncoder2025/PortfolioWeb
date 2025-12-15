@@ -203,7 +203,7 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
   ];
 
   return (
-    <div className="min-h-screen relative" style={{ backgroundColor: colors.linen }}>
+    <div className="min-h-screen relative" style={{ backgroundColor: colors.linen, paddingTop: 96 }}>
       {/* Top Bar */}
       <div className="bg-white shadow-lg" style={{ borderBottom: `4px solid ${colors.gold}` }}>
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
