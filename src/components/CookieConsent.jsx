@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, NavLink } from 'react-router-dom';
 
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
@@ -33,13 +33,13 @@ export default function CookieConsent() {
           <p className="text-sm md:text-base">
             <strong>Informacja o cookies:</strong> Ta strona używa cookies do analizy ruchu i zapamiętywania Twoich preferencji.
             Klikając "Akceptuję", wyrażasz zgodę na naszą{' '}
-            <a href="/privacy" className="text-blue-300 hover:underline">
+            <NavLink to="/privacy" className="text-blue-300 hover:underline">
               Politykę Prywatności
-            </a>
+            </NavLink>
             {' '}i{' '}
-            <a href="/cookies" className="text-blue-300 hover:underline">
+            <NavLink to="/cookies" className="text-blue-300 hover:underline">
               Politykę Cookies
-            </a>.
+            </NavLink>.
           </p>
         </div>
         <button
