@@ -36,43 +36,48 @@ export default function PortfolioItemPage({ siteData = {} }) {
     );
   }
 
+  // Budowanie listy mediów z galerii
   const media = (item.images || []).map(m => (typeof m === 'string' ? { url: m, caption: '' } : m));
   if (media.length === 0 && item.image) {
     media.push({ url: item.image, caption: '' });
   }
 
+  // Featured media (główne media projektu)
   const featured = item.featuredMedia && (item.featuredMedia.url || item.featuredMedia.caption)
     ? { url: item.featuredMedia.url || '', caption: item.featuredMedia.caption || '' }
     : null;
 
+  // Funkcja do określania typu media
   const inferKind = (url = '') => {
     const u = (url || '').toLowerCase();
     if (!u) return 'unknown';
     if (u.includes('youtube.com') || u.includes('youtu.be')) return 'youtube';
     if (u.includes('tiktok.com')) return 'tiktok';
-    if (u.includes('/api/video/') || u.endsWith('.mp4') || u.endsWith('.webm') || u.match(/\.(mp4|webm|mov|avi|m4v)(\?|#|$)/i)) return 'video';
+    if (u.includes('/api/video/') || u.includes('/video/') || u.endsWith('.mp4') || u.endsWith('.webm') || u.match(/\.(mp4|webm|mov|avi|m4v)(\?|#|$)/i)) return 'video';
     return 'image';
   };
 
-  const renderMedia = (m, idx, aspectClass) => {
+  // Funkcja do renderowania miniaturki/placeholdera (NIE odtwarza video!)
+  const renderThumbnail = (m) => {
     const url = m?.url || '';
     const kind = inferKind(url);
 
+    // YouTube - iframe embed
     if (kind === 'youtube') {
       let src = url;
       if (url.includes('embed/')) {
         src = url;
       } else if (url.includes('youtu.be/')) {
-        const id = url.split('youtu.be/')[1]?.split('?')[0]?.split('&')[0];
-        src = id ? `https://www.youtube.com/embed/${id}` : url;
+        const videoId = url.split('youtu.be/')[1]?.split('?')[0]?.split('&')[0];
+        src = videoId ? `https://www.youtube.com/embed/${videoId}` : url;
       } else {
         src = url.replace('watch?v=', 'embed/').split('&')[0];
       }
       return (
         <iframe
-          title={`yt-${idx}`}
+          title="youtube-embed"
           src={src}
-          className={`w-full h-full ${aspectClass || ''}`}
+          className="w-full h-full"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -80,54 +85,26 @@ export default function PortfolioItemPage({ siteData = {} }) {
       );
     }
 
+    // TikTok - miniaturka z linkiem
     if (kind === 'tiktok') {
-      // Użyj TikTokThumbnail z linkiem do TikTok - jak w galerii
       return (
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none' }}
-        >
+        <a href={url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
           <TikTokThumbnail url={url} />
         </a>
       );
     }
 
+    // VIDEO - ZAWSZE pokazuj tylko placeholder, nigdy nie renderuj <video>
     if (kind === 'video') {
-      // Dla featured video, pokaż tylko placeholder bez żadnego video elementu
-      if (idx === 'featured') {
-        return (
-          <div className="w-full h-full bg-gray-800 flex items-center justify-center relative cursor-pointer">
-            <div className="text-white text-6xl opacity-80">▶️</div>
-            <div className="absolute bottom-4 left-4 text-white text-sm bg-black/50 px-2 py-1 rounded">
-              Kliknij aby obejrzeć video
-            </div>
-          </div>
-        );
-      }
       return (
-        <video 
-          controls 
-          playsInline
-          preload="metadata"
-          className="w-full h-auto"
-          style={{ 
-            maxHeight: '80vh', 
-            backgroundColor: '#000',
-            display: 'block',
-            margin: '0 auto'
-          }}
-          onError={(e) => {
-            console.error('Video load error:', url, e);
-          }}
-          src={url}
-        >
-          Twoja przeglądarka nie obsługuje odtwarzania video.
-        </video>
+        <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center relative cursor-pointer group">
+          <div className="text-white text-6xl mb-2 group-hover:scale-110 transition-transform">▶️</div>
+          <div className="text-white text-sm opacity-70">Kliknij aby odtworzyć</div>
+        </div>
       );
     }
 
+    // IMAGE - normalne zdjęcie
     return (
       <img
         src={url}
@@ -139,10 +116,18 @@ export default function PortfolioItemPage({ siteData = {} }) {
     );
   };
 
+  // Funkcja do otwierania lightbox
+  const openLightbox = (mediaArray, startIndex = 0) => {
+    setLightboxMedia(mediaArray);
+    setLightboxStartIndex(startIndex);
+    setIsLightboxOpen(true);
+  };
+
   return (
     <main style={{ backgroundColor: colors.cream, minHeight: '100vh', paddingTop: 96 }}>
       <section className="py-8 md:py-12 px-4 md:px-6">
         <div className="max-w-6xl mx-auto">
+          {/* Nagłówek */}
           <div className="mb-6 md:mb-8">
             <Link 
               to="/portfolio" 
@@ -166,11 +151,11 @@ export default function PortfolioItemPage({ siteData = {} }) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {/* Featured media (image or video) */}
+            {/* Featured media (główne media projektu) */}
             {featured?.url && (
               <>
                 {inferKind(featured.url) === 'tiktok' ? (
-                  // TikTok - bez białego tła
+                  // TikTok - specjalny layout
                   <div className="md:col-span-2 lg:col-span-3 flex justify-center py-6">
                     <div style={{ 
                       maxWidth: '400px', 
@@ -179,28 +164,29 @@ export default function PortfolioItemPage({ siteData = {} }) {
                       borderRadius: '0.75rem',
                       overflow: 'hidden',
                       boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                      transition: 'box-shadow 0.3s'
                     }}>
-                      {renderMedia(featured, 'featured', '')}
+                      {renderThumbnail(featured)}
                     </div>
                   </div>
                 ) : (
                   // Inne media - z białym tłem
-                  <div className="md:col-span-2 lg:col-span-3 bg-white rounded-xl overflow-visible shadow-lg hover:shadow-xl transition-shadow"
-                       style={{ cursor: (inferKind(featured.url) === 'image' || inferKind(featured.url) === 'video') ? 'pointer' : 'default' }}
-                       onClick={(e) => {
-                         if (inferKind(featured.url) === 'image' || inferKind(featured.url) === 'video') {
-                           e.stopPropagation();
-                           setLightboxMedia([featured]);
-                           setLightboxStartIndex(0);
-                           setIsLightboxOpen(true);
-                         }
-                       }}>
+                  <div 
+                    className="md:col-span-2 lg:col-span-3 bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                    onClick={() => {
+                      const kind = inferKind(featured.url);
+                      if (kind === 'image' || kind === 'video') {
+                        openLightbox([featured], 0);
+                      }
+                    }}
+                  >
                     <div className="aspect-video w-full relative group">
-                      {renderMedia(featured, 'featured', '')}
+                      {renderThumbnail(featured)}
+                      {/* Overlay na hover */}
                       {(inferKind(featured.url) === 'image' || inferKind(featured.url) === 'video') && (
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
-                          <div className="text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity">{inferKind(featured.url) === 'video' ? '▶️' : '🔍'}</div>
+                          <div className="text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                            {inferKind(featured.url) === 'video' ? '▶️' : '🔍'}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -214,11 +200,17 @@ export default function PortfolioItemPage({ siteData = {} }) {
               </>
             )}
 
-            {/* Legacy main video fallback if no featured */}
+            {/* Legacy video fallback (jeśli nie ma featured) */}
             {!featured?.url && item.video && (
-              <div className="md:col-span-2 lg:col-span-3 bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                <div className="aspect-video w-full relative">
-                  {renderMedia({ url: item.video, caption: item.videoCaption || '' }, 'legacy-video', '')}
+              <div 
+                className="md:col-span-2 lg:col-span-3 bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                onClick={() => openLightbox([{ url: item.video, caption: item.videoCaption || '' }], 0)}
+              >
+                <div className="aspect-video w-full relative group">
+                  {renderThumbnail({ url: item.video, caption: item.videoCaption || '' })}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
+                    <div className="text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity">▶️</div>
+                  </div>
                 </div>
                 {item.videoCaption && (
                   <div className="p-4 border-t bg-gray-50">
@@ -228,54 +220,56 @@ export default function PortfolioItemPage({ siteData = {} }) {
               </div>
             )}
 
-            {/* Image Gallery */}
+            {/* Galeria mediów */}
             {media.map((m, idx) => {
               const mediaKind = inferKind(m.url);
               const isClickable = mediaKind === 'image' || mediaKind === 'video' || mediaKind === 'tiktok';
               
               return (
-              <div key={idx} className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
-                   style={{ cursor: isClickable ? 'pointer' : 'default' }}
-                   onClick={(e) => {
-                     if (mediaKind === 'image' || mediaKind === 'video') {
-                       e.stopPropagation();
-                       setLightboxMedia(media);
-                       setLightboxStartIndex(idx);
-                       setIsLightboxOpen(true);
-                     } else if (mediaKind === 'tiktok') {
-                       window.open(m.url, '_blank');
-                     }
-                   }}>
-                <div className="relative overflow-hidden bg-gray-100 aspect-[4/3]">
-                  {m.url ? (
-                    <>
-                      {mediaKind === 'tiktok' ? (
-                        // Dla TikTok w galerii użyj miniatury z linkiem do nowej karty
-                        <TikTokThumbnail url={m.url} />
-                      ) : (
-                        <div className="w-full h-full">{renderMedia(m, idx, '')}</div>
-                      )}
-                      {/* Lupa dla zdjęć i video */}
-                      {(mediaKind === 'image' || mediaKind === 'video') && (
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
-                          <div className="text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity">{mediaKind === 'video' ? '▶️' : '🔍'}</div>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">Brak mediów</div>
+                <div 
+                  key={idx} 
+                  className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+                  style={{ cursor: isClickable ? 'pointer' : 'default' }}
+                  onClick={() => {
+                    if (mediaKind === 'image' || mediaKind === 'video') {
+                      openLightbox(media, idx);
+                    } else if (mediaKind === 'tiktok') {
+                      window.open(m.url, '_blank');
+                    }
+                  }}
+                >
+                  <div className="relative overflow-hidden bg-gray-100 aspect-[4/3]">
+                    {m.url ? (
+                      <>
+                        {mediaKind === 'tiktok' ? (
+                          <TikTokThumbnail url={m.url} />
+                        ) : (
+                          renderThumbnail(m)
+                        )}
+                        {/* Overlay na hover dla zdjęć i video */}
+                        {(mediaKind === 'image' || mediaKind === 'video') && (
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
+                            <div className="text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                              {mediaKind === 'video' ? '▶️' : '🔍'}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">Brak mediów</div>
+                    )}
+                  </div>
+                  {m.caption && (
+                    <div className="p-4 border-t border-gray-100">
+                      <p className="text-sm font-medium leading-snug" style={{ color: colors.brown }}>{m.caption}</p>
+                    </div>
                   )}
                 </div>
-                {m.caption && (
-                  <div className="p-4 border-t border-gray-100">
-                    <p className="text-sm font-medium leading-snug" style={{ color: colors.brown }}>{m.caption}</p>
-                  </div>
-                )}
-              </div>
-            );})}
+              );
+            })}
           </div>
 
-          {/* MediaLightbox component */}
+          {/* MediaLightbox - TYLKO tutaj odtwarzane jest video */}
           <MediaLightbox
             isOpen={isLightboxOpen}
             media={lightboxMedia}
@@ -283,30 +277,6 @@ export default function PortfolioItemPage({ siteData = {} }) {
             initialIndex={lightboxStartIndex}
             onClose={() => setIsLightboxOpen(false)}
           />
-
-          {/* TikTok Modal - temporarily disabled
-          {isTikTokModalOpen && (
-            <div
-              className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-              style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)' }}
-              onClick={() => setIsTikTokModalOpen(false)}
-            >
-              <button
-                onClick={() => setIsTikTokModalOpen(false)}
-                className="absolute top-4 right-4 text-white text-3xl font-bold hover:opacity-70 transition-opacity z-[210]"
-                aria-label="Zamknij"
-              >
-                ✕
-              </button>
-
-              <div
-                className="relative flex items-center justify-center max-w-[90vw] max-h-[90vh]"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <TikTokEmbed url={tiktokUrl} width="100%" aspectRatio="9/16" />
-              </div>
-            </div>
-          )} */}
         </div>
       </section>
     </main>
