@@ -95,22 +95,13 @@ export default function PortfolioItemPage({ siteData = {} }) {
     }
 
     if (kind === 'video') {
-      // Dla featured video, pokaż thumbnail zamiast pełnego video, żeby uniknąć duplikacji w lightbox
+      // Dla featured video, pokaż placeholder zamiast pełnego video, żeby uniknąć duplikacji w lightbox
       if (idx === 'featured') {
         return (
-          <div className="w-full h-full bg-gray-900 flex items-center justify-center relative">
-            <video
-              muted
-              preload="metadata"
-              className="w-full h-full object-cover"
-              style={{ filter: 'brightness(0.7)' }}
-              src={url}
-              onError={(e) => {
-                console.error('Video load error:', url, e);
-              }}
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-white text-6xl opacity-80">▶️</div>
+          <div className="w-full h-full bg-gray-800 flex items-center justify-center relative">
+            <div className="text-white text-6xl opacity-80">▶️</div>
+            <div className="absolute bottom-4 left-4 text-white text-sm bg-black/50 px-2 py-1 rounded">
+              Video
             </div>
           </div>
         );
