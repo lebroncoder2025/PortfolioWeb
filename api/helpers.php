@@ -285,6 +285,15 @@ function requireAuth() {
 }
 
 /**
+ * Require admin role
+ */
+function requireAdmin($user) {
+    if (!isset($user['role']) || $user['role'] !== 'admin') {
+        errorResponse('Forbidden: Admin access required', 403);
+    }
+}
+
+/**
  * Commit uploaded file to GitHub repo for GitHub Pages access
  */
 function commitFileToGitHub($filename, $filePath) {
