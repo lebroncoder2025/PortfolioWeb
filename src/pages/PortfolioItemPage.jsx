@@ -95,13 +95,13 @@ export default function PortfolioItemPage({ siteData = {} }) {
     }
 
     if (kind === 'video') {
-      // Dla featured video, pokaż placeholder zamiast pełnego video, żeby uniknąć duplikacji w lightbox
+      // Dla featured video, pokaż tylko placeholder bez żadnego video elementu
       if (idx === 'featured') {
         return (
-          <div className="w-full h-full bg-gray-800 flex items-center justify-center relative">
+          <div className="w-full h-full bg-gray-800 flex items-center justify-center relative cursor-pointer">
             <div className="text-white text-6xl opacity-80">▶️</div>
             <div className="absolute bottom-4 left-4 text-white text-sm bg-black/50 px-2 py-1 rounded">
-              Video
+              Kliknij aby obejrzeć video
             </div>
           </div>
         );
