@@ -27,32 +27,36 @@ function serveVideo($id) {
     // Allow cross-origin streaming (useful when frontend and API are on different origins)
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Headers: Range, Content-Type, Accept');
-    header('Access-Control-Expose-Headers: Accept-Ranges, Content-Range');
+    // Expose debugging and range headers to the client
+    header('Access-Control-Expose-Headers: Accept-Ranges, Content-Range, X-Server-Video-Mime, X-Server-Video-Size');
     // Debug headers to help identify MIME/size issues during troubleshooting
     header('X-Server-Video-Mime: ' . $mimeType);
     header('X-Server-Video-Size: ' . $filesize);
-    header('Content-Type: ' . $mimeType);
-    header('Content-Length: ' . $filesize);
     header('Accept-Ranges: bytes');
     header('Cache-Control: public, max-age=86400');
-    
-    // Handle range requests for seeking in video
+
+    // Handle range requests for seeking in video (do NOT send Content-Length until we know full vs partial)
     if (isset($_SERVER['HTTP_RANGE'])) {
         if (preg_match('/bytes=(\d+)-(\d*)/', $_SERVER['HTTP_RANGE'], $matches)) {
             $start = intval($matches[1]);
             $end = $matches[2] !== '' ? intval($matches[2]) : $filesize - 1;
-            
+
             if ($start <= $end && $end < $filesize) {
+                $length = $end - $start + 1;
                 http_response_code(206);
+                header('Content-Type: ' . $mimeType);
                 header('Content-Range: bytes ' . $start . '-' . $end . '/' . $filesize);
-                header('Content-Length: ' . ($end - $start + 1));
-                echo substr($video['image_data'], $start, $end - $start + 1);
+                header('Content-Length: ' . $length);
+                echo substr($video['image_data'], $start, $length);
                 exit;
             }
         }
     }
-    
-    // Normal response
+
+    // Normal (full) response
+    header('Content-Type: ' . $mimeType);
+    header('Content-Length: ' . $filesize);
+    http_response_code(200);
     echo $video['image_data'];
     exit;
 }
