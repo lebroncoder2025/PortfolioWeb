@@ -106,6 +106,10 @@ try {
         require __DIR__ . '/routes/logs.php';
         logClientError();
     }
+    // Fix video URLs (one-time migration)
+    elseif ($uri === '/fix-video-urls' && $method === 'GET') {
+        require __DIR__ . '/fix-video-urls.php';
+    }
     // 404 for unknown routes
     else {
         errorResponse('Not found', 404);
