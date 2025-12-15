@@ -28,6 +28,9 @@ function serveVideo($id) {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Headers: Range, Content-Type, Accept');
     header('Access-Control-Expose-Headers: Accept-Ranges, Content-Range');
+    // Debug headers to help identify MIME/size issues during troubleshooting
+    header('X-Server-Video-Mime: ' . $mimeType);
+    header('X-Server-Video-Size: ' . $filesize);
     header('Content-Type: ' . $mimeType);
     header('Content-Length: ' . $filesize);
     header('Accept-Ranges: bytes');
