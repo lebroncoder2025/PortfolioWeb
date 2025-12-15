@@ -15,6 +15,7 @@ const colors = {
 export default function PortfolioItemPage({ siteData = {} }) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxStartIndex, setLightboxStartIndex] = useState(0);
+  const [lightboxMedia, setLightboxMedia] = useState([]);
 
   const { category, id } = useParams();
   const decodedCategory = decodeURIComponent(category || '');
@@ -179,8 +180,8 @@ export default function PortfolioItemPage({ siteData = {} }) {
                        onClick={(e) => {
                          if (inferKind(featured.url) === 'image' || inferKind(featured.url) === 'video') {
                            e.stopPropagation();
-                           const index = media.findIndex(m => m.url === featured.url);
-                           setLightboxStartIndex(index >= 0 ? index : 0);
+                           setLightboxMedia([featured]);
+                           setLightboxStartIndex(0);
                            setIsLightboxOpen(true);
                          }
                        }}>
@@ -227,6 +228,7 @@ export default function PortfolioItemPage({ siteData = {} }) {
                    onClick={(e) => {
                      if (mediaKind === 'image' || mediaKind === 'video') {
                        e.stopPropagation();
+                       setLightboxMedia(media);
                        setLightboxStartIndex(idx);
                        setIsLightboxOpen(true);
                      } else if (mediaKind === 'tiktok') {
@@ -265,7 +267,7 @@ export default function PortfolioItemPage({ siteData = {} }) {
           {/* MediaLightbox component */}
           <MediaLightbox
             isOpen={isLightboxOpen}
-            media={media}
+            media={lightboxMedia}
             title={item.title}
             initialIndex={lightboxStartIndex}
             onClose={() => setIsLightboxOpen(false)}

@@ -482,11 +482,13 @@ function handlePortfolio($method, $id, $user) {
 function createPortfolioItem($db, $user) {
     $newId = generateUUID();
     
-    $title = $_POST['title'] ?? '';
-    $category = $_POST['category'] ?? '';
-    $video = $_POST['video'] ?? null;
-    $images = $_POST['images'] ?? '[]';
-    $featuredMedia = $_POST['featuredMedia'] ?? null;
+    $data = getJsonBody();
+    
+    $title = $data['title'] ?? '';
+    $category = $data['category'] ?? '';
+    $video = $data['video'] ?? null;
+    $images = $data['images'] ?? [];
+    $featuredMedia = $data['featuredMedia'] ?? null;
     
     // Parse images
     $imagesArray = [];
