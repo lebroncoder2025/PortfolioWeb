@@ -122,7 +122,7 @@ export default function PortfolioItemPage({ siteData = {} }) {
         alt={m.caption || item.title}
         className="w-full h-full object-cover"
         loading="lazy"
-        onError={(e) => { e.target.src = '/placeholder.jpg'; }}
+        onError={(e) => { e.target.style.display = 'none'; }}
       />
     );
   };
