@@ -200,7 +200,26 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
     };
     compute();
     window.addEventListener('resize', compute);
-    return () => window.removeEventListener('resize', compute);
+
+    // Ensure nav is non-sticky on small screens to avoid overlap issues
+    const adaptNav = () => {
+      try {
+        if (!navRef.current) return;
+        if (window.innerWidth < 640) {
+          navRef.current.style.position = 'relative';
+          navRef.current.style.top = 'auto';
+        } else {
+          navRef.current.style.position = '';
+          navRef.current.style.top = '';
+        }
+      } catch (e) { /* ignore */ }
+    };
+    adaptNav();
+    window.addEventListener('resize', adaptNav);
+    return () => {
+      window.removeEventListener('resize', compute);
+      window.removeEventListener('resize', adaptNav);
+    };
   }, []);
   const tabs = [
     { id: 'hero', label: 'Hero', icon: '🎬' },
