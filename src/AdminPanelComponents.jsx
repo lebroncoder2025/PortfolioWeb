@@ -17,6 +17,7 @@ const getMediaType = (url) => {
   const lower = url.toLowerCase();
   if (lower.includes('tiktok.com') || lower.includes('vm.tiktok')) return 'tiktok';
   if (lower.includes('youtube.com') || lower.includes('youtu.be')) return 'youtube';
+  if (lower.includes('/video/')) return 'video';
   if (lower.match(/\.(mp4|webm|mov|avi|m4v)(\?|#|$)/)) return 'video';
   if (lower.match(/\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|#|$)/)) return 'image';
   if (lower.includes('/uploads/') || lower.includes('picsum') || lower.includes('unsplash') || lower.includes('/image/')) return 'image';
@@ -205,41 +206,41 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
     <div className="min-h-screen relative" style={{ backgroundColor: colors.linen, zIndex: 100 }}>
       {/* Top Bar */}
       <div className="bg-white shadow-lg sticky top-0 z-[100]" style={{ borderBottom: `4px solid ${colors.gold}` }}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center gap-4">
-          <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: colors.gold }}>
-            <span>⚙️</span> Panel Admin
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center gap-4 sm:px-3 sm:py-2 sm:flex-wrap">
+          <h1 className="text-2xl font-bold flex items-center gap-2 sm:text-xl sm:gap-1" style={{ color: colors.gold }}>
+            <span>⚙️</span> <span className="hidden sm:inline">Panel</span><span className="hidden xs:inline">Admin</span>
           </h1>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 sm:gap-2">
             {currentUser && (
-              <div className="flex items-center gap-3 px-4 py-2 rounded-lg" style={{ backgroundColor: colors.cream }}>
-                <span className="text-xl">{currentUser.role === 'admin' ? '👑' : '👤'}</span>
-                <div className="text-sm">
-                  <p className="font-semibold" style={{ color: colors.darkGray }}>{currentUser.email}</p>
-                  <p className="text-xs" style={{ color: colors.brown }}>{currentUser.role === 'admin' ? 'Administrator' : 'Moderator'}</p>
+              <div className="flex items-center gap-3 px-4 py-2 rounded-lg sm:px-2 sm:py-1 sm:flex-col sm:gap-1" style={{ backgroundColor: colors.cream }}>
+                <span className="text-xl sm:text-lg">{currentUser.role === 'admin' ? '👑' : '👤'}</span>
+                <div className="text-sm sm:text-xs sm:text-center">
+                  <p className="font-semibold sm:text-xs" style={{ color: colors.darkGray }}>{currentUser.email}</p>
+                  <p className="text-xs sm:text-xs" style={{ color: colors.brown }}>{currentUser.role === 'admin' ? 'Admin' : 'Mod'}</p>
                 </div>
               </div>
             )}
             <button
               onClick={onLogout}
-              className="px-5 py-2 rounded-lg text-white font-semibold transition duration-300 hover:shadow-lg hover:scale-105 active:scale-95"
+              className="px-5 py-2 rounded-lg text-white font-semibold transition duration-300 hover:shadow-lg hover:scale-105 active:scale-95 sm:px-3 sm:py-1 sm:text-sm"
               style={{ backgroundColor: colors.brown }}
               onMouseEnter={(e) => e.target.style.boxShadow = `0 8px 16px rgba(139,115,85,0.3)`}
               onMouseLeave={(e) => e.target.style.boxShadow = 'none'}
             >
-              🚪 Wyloguj
+              🚪 <span className="hidden sm:inline">X</span><span className="sm:hidden">Wyloguj</span>
             </button>
           </div>
         </div>
       </div>
       {/* Navigation Tabs */}
       <div className="bg-white shadow-sm sticky top-16 z-[90]" style={{ borderBottom: `2px solid ${colors.cream}` }}>
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-6 sm:px-2">
           <div className="flex gap-1 overflow-x-auto py-3 scrollbar-hide">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-5 py-2.5 rounded-lg font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-lg font-medium whitespace-nowrap transition-all flex items-center gap-2 sm:px-2 sm:py-1.5 sm:text-sm ${
                   activeTab === tab.id ? 'text-white shadow-md' : 'hover:bg-gray-100'
                 }`}
                 style={{
@@ -248,14 +249,14 @@ export const AdminDashboard = ({ onLogout, siteData, setSiteData }) => {
                 }}
               >
                 <span>{tab.icon}</span>
-                <span>{tab.label}</span>
+                <span className="hidden sm:inline">{tab.label.substring(0, 3)}</span><span className="sm:hidden">{tab.label}</span>
               </button>
             ))}
           </div>
         </div>
       </div>
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="max-w-5xl mx-auto px-6 py-8 sm:px-3 sm:py-4">
         {activeTab === 'hero' && <HeroEditor siteData={siteData} setSiteData={setSiteData} />}
         {activeTab === 'about' && <AboutEditor siteData={siteData} setSiteData={setSiteData} />}
         {activeTab === 'services' && <ServicesEditor siteData={siteData} setSiteData={setSiteData} />}
@@ -278,13 +279,13 @@ const InlineMessage = ({ type = 'success', children }) => (
 );
 
 const EditorCard = ({ title, icon, children }) => (
-  <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-t-4" style={{ borderColor: colors.gold }}>
-    <div className="px-8 py-5 border-b-2" style={{ borderColor: colors.cream, backgroundColor: colors.beige }}>
-      <h2 className="text-2xl font-bold flex items-center gap-3" style={{ color: colors.darkGray }}>
-        <span className="text-3xl">{icon}</span> {title}
+  <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-t-4 sm:rounded-lg" style={{ borderColor: colors.gold }}>
+    <div className="px-8 py-5 border-b-2 sm:px-4 sm:py-3" style={{ borderColor: colors.cream, backgroundColor: colors.beige }}>
+      <h2 className="text-2xl font-bold flex items-center gap-3 sm:text-xl sm:gap-2" style={{ color: colors.darkGray }}>
+        <span className="text-3xl sm:text-2xl">{icon}</span> <span className="break-words">{title}</span>
       </h2>
     </div>
-    <div className="p-8 space-y-6">
+    <div className="p-8 space-y-6 sm:p-4 sm:space-y-4">
       {children}
     </div>
   </div>
@@ -342,47 +343,47 @@ const HeroEditor = ({ siteData, setSiteData }) => {
   return (
     <EditorCard title="Sekcja Hero" icon="🎬">
       <div>
-        <label className="block font-semibold mb-3 text-lg" style={{ color: colors.darkGray }}>Nagłówek główny</label>
+        <label className="block font-semibold mb-3 text-lg sm:text-base" style={{ color: colors.darkGray }}>Nagłówek główny</label>
         <input
           type="text"
           value={formData.title || ''}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full px-5 py-4 rounded-xl border-2 focus:outline-none focus:ring-2 transition text-base"
+          className="w-full px-5 py-4 rounded-xl border-2 focus:outline-none focus:ring-2 transition text-base sm:text-sm sm:px-3 sm:py-2"
           style={{ borderColor: colors.cream, '--tw-ring-color': colors.gold }}
           placeholder="Np. Kreatywny Twórca Treści"
         />
       </div>
       <div>
-        <label className="block font-semibold mb-3 text-lg" style={{ color: colors.darkGray }}>Podtytuł</label>
+        <label className="block font-semibold mb-3 text-lg sm:text-base" style={{ color: colors.darkGray }}>Podtytuł</label>
         <input
           type="text"
           value={formData.subtitle || ''}
           onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-          className="w-full px-5 py-4 rounded-xl border-2 focus:outline-none focus:ring-2 transition text-base"
+          className="w-full px-5 py-4 rounded-xl border-2 focus:outline-none focus:ring-2 transition text-base sm:text-sm sm:px-3 sm:py-2"
           style={{ borderColor: colors.cream, '--tw-ring-color': colors.gold }}
           placeholder="Np. Vlogi • Reklamy • Social Media"
         />
       </div>
       <div>
-        <label className="block font-semibold mb-3 text-lg" style={{ color: colors.darkGray }}>Zdjęcie profilowe</label>
+        <label className="block font-semibold mb-3 text-lg sm:text-base" style={{ color: colors.darkGray }}>Zdjęcie profilowe</label>
         {(formData.tempImagePreview || formData.image) && (
           <div className="mb-4">
-            <img src={formData.tempImagePreview || formData.image} alt="preview" className="w-32 h-32 rounded-full object-cover border-4 shadow-md" style={{ borderColor: colors.gold }} />
+            <img src={formData.tempImagePreview || formData.image} alt="preview" className="w-32 h-32 rounded-full object-cover border-4 shadow-md sm:w-24 sm:h-24 sm:border-2" style={{ borderColor: colors.gold }} />
           </div>
         )}
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,video/mp4,video/webm"
           onChange={handleFileSelect}
-          className="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-5 file:rounded-lg file:border-0 file:font-semibold file:cursor-pointer file:transition hover:file:opacity-80"
+          className="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-5 file:rounded-lg file:border-0 file:font-semibold file:cursor-pointer file:transition hover:file:opacity-80 sm:file:mr-2 sm:file:py-2 sm:file:px-3 sm:text-xs"
           style={{ '--file-bg': colors.gold, '--file-color': 'white' }}
         />
       </div>
       <button
         onClick={handleSave}
         disabled={saving}
-        className="w-full py-4 rounded-xl text-white font-bold text-lg transition hover:opacity-90 disabled:opacity-50"
+        className="w-full py-4 rounded-xl text-white font-bold text-lg transition hover:opacity-90 disabled:opacity-50 sm:py-3 sm:text-base"
         style={{ backgroundColor: colors.gold }}
       >
         {saving ? '💾 Zapisywanie...' : '💾 Zapisz zmiany'}
@@ -452,46 +453,46 @@ const AboutEditor = ({ siteData, setSiteData }) => {
   return (
     <EditorCard title="Sekcja O mnie" icon="👤">
       <div>
-        <label className="block font-semibold mb-3 text-lg" style={{ color: colors.darkGray }}>Tytuł sekcji</label>
+        <label className="block font-semibold mb-3 text-lg sm:text-base" style={{ color: colors.darkGray }}>Tytuł sekcji</label>
         <input
           type="text"
           value={formData.title || ''}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full px-5 py-4 rounded-xl border-2 text-base"
+          className="w-full px-5 py-4 rounded-xl border-2 text-base sm:text-sm sm:px-3 sm:py-2"
           style={{ borderColor: colors.cream }}
           placeholder="O mnie"
         />
       </div>
       <div>
-        <label className="block font-semibold mb-3 text-lg" style={{ color: colors.darkGray }}>Bio / Opis</label>
+        <label className="block font-semibold mb-3 text-lg sm:text-base" style={{ color: colors.darkGray }}>Bio / Opis</label>
         <textarea
           value={formData.bio || ''}
           onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-          className="w-full px-5 py-4 rounded-xl border-2 h-40 resize-none text-base"
+          className="w-full px-5 py-4 rounded-xl border-2 h-40 resize-none text-base sm:text-sm sm:px-3 sm:py-2 sm:h-32"
           style={{ borderColor: colors.cream }}
           placeholder="Opowiedz o sobie..."
         />
       </div>
       <div>
-        <label className="block font-semibold mb-3 text-lg" style={{ color: colors.darkGray }}>Zdjęcie</label>
+        <label className="block font-semibold mb-3 text-lg sm:text-base" style={{ color: colors.darkGray }}>Zdjęcie</label>
         {(formData.tempImagePreview || formData.image) && (
           <div className="mb-4">
-            <img src={formData.tempImagePreview || formData.image} alt="preview" className="w-40 h-40 rounded-xl object-cover shadow-md" />
+            <img src={formData.tempImagePreview || formData.image} alt="preview" className="w-40 h-40 rounded-xl object-cover shadow-md sm:w-32 sm:h-32 sm:shadow-sm" />
           </div>
         )}
-        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-5 file:rounded-lg file:font-semibold file:cursor-pointer" />
+        <input ref={fileInputRef} type="file" accept="image/*,video/mp4,video/webm" onChange={handleFileSelect} className="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-5 file:rounded-lg file:font-semibold file:cursor-pointer sm:file:mr-2 sm:file:py-2 sm:file:px-3 sm:text-xs" />
       </div>
       <div>
-        <label className="block font-semibold mb-3 text-lg" style={{ color: colors.darkGray }}>Statystyki</label>
-        <div className="space-y-3">
+        <label className="block font-semibold mb-3 text-lg sm:text-base" style={{ color: colors.darkGray }}>Statystyki</label>
+        <div className="space-y-3 sm:space-y-2">
           {(formData.stats || []).map((stat, idx) => (
-            <div key={idx} className="flex gap-3 items-center">
+            <div key={idx} className="flex gap-3 items-center sm:gap-2">
               <input
                 type="text"
                 value={stat.label}
                 onChange={(e) => updateStat(idx, 'label', e.target.value)}
                 placeholder="Etykieta"
-                className="flex-1 px-4 py-3 rounded-lg border-2 text-base"
+                className="flex-1 px-4 py-3 rounded-lg border-2 text-base sm:text-sm sm:px-2 sm:py-2"
                 style={{ borderColor: colors.cream }}
               />
               <input
@@ -499,18 +500,18 @@ const AboutEditor = ({ siteData, setSiteData }) => {
                 value={stat.value}
                 onChange={(e) => updateStat(idx, 'value', e.target.value)}
                 placeholder="Wartość"
-                className="w-28 px-4 py-3 rounded-lg border-2 text-base"
+                className="w-28 px-4 py-3 rounded-lg border-2 text-base sm:text-sm sm:px-2 sm:py-2 sm:w-20"
                 style={{ borderColor: colors.cream }}
               />
-              <button onClick={() => removeStat(idx)} className="px-4 py-3 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 font-semibold transition-all duration-300 hover:shadow-md">✕</button>
+              <button onClick={() => removeStat(idx)} className="px-4 py-3 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 font-semibold transition-all duration-300 hover:shadow-md sm:px-2 sm:py-2 sm:text-sm">✕</button>
             </div>
           ))}
         </div>
-        <button onClick={addStat} className="mt-4 px-5 py-3 rounded-lg text-base font-semibold transition-all duration-300 hover:shadow-md hover:scale-105 active:scale-95" style={{ backgroundColor: colors.cream, color: colors.brown }}>
+        <button onClick={addStat} className="mt-4 px-5 py-3 rounded-lg text-base font-semibold transition-all duration-300 hover:shadow-md hover:scale-105 active:scale-95 sm:text-sm sm:px-3 sm:py-2" style={{ backgroundColor: colors.cream, color: colors.brown }}>
           + Dodaj statystykę
         </button>
       </div>
-      <button onClick={handleSave} disabled={saving} className="w-full py-4 rounded-xl text-white font-bold text-lg" style={{ backgroundColor: colors.gold }}>
+      <button onClick={handleSave} disabled={saving} className="w-full py-4 rounded-xl text-white font-bold text-lg sm:py-3 sm:text-base" style={{ backgroundColor: colors.gold }}>
         {saving ? '💾 Zapisywanie...' : '💾 Zapisz zmiany'}
       </button>
       {message && <InlineMessage type={message.type}>{message.text}</InlineMessage>}

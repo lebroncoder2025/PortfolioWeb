@@ -43,4 +43,109 @@ body {
 .app-content {
   flex: 1;
   display: flex;
-  flex-direction: column;}
+  flex-direction: column;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  /* Admin Panel Responsiveness */
+  .admin-panel {
+    padding: 0.5rem;
+  }
+
+  .editor-section {
+    margin-bottom: 1rem;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Reduce shadows on mobile */
+  .shadow-xl {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .shadow-lg {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Make buttons touch-friendly */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Flexible grid for mobile */
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .gap-4 {
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 0.875rem !important;
+    line-height: 1.25;
+  }
+
+  /* Stack everything vertically */
+  .flex-row {
+    flex-direction: column !important;
+  }
+
+  .gap-6 {
+    gap: 0.5rem !important;
+  }
+
+  .p-8 {
+    padding: 1rem !important;
+  }
+
+  .px-6 {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  input,
+  textarea,
+  button,
+  select {
+    font-size: 16px; /* Prevent zoom */
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  button {
+    padding: 0.75rem !important;
+  }
+
+  .max-w-5xl,
+  .max-w-7xl {
+    width: 100% !important;
+    padding: 0.5rem !important;
+  }
+
+  /* Admin panel adjustments */
+  .sticky.top-0 {
+    top: 0;
+  }
+
+  .sticky.top-16 {
+    top: 56px; /* Adjust for compact header */
+  }
+}

@@ -65,6 +65,11 @@ try {
         require __DIR__ . '/routes/image.php';
         serveImage($m[1]);
     }
+    // Video serving (public)
+    elseif (preg_match('#^/video/([a-f0-9\-]+)$#i', $uri, $m)) {
+        require __DIR__ . '/routes/video.php';
+        serveVideo($m[1]);
+    }
     // Login
     elseif ($uri === '/login' && $method === 'POST') {
         require __DIR__ . '/routes/auth.php';
