@@ -685,11 +685,55 @@ function updatePortfolioItem($db, $id, $user) {
 function updateCategories($user) {
     $db = Database::getInstance();
     $data = getJsonBody();
-    
-    // Categories stored as JSON
-    $categoriesJson = json_encode($data);
-    $db->query('UPDATE categories SET data = ? LIMIT 1', [$categoriesJson]);
-    
+
+    // Get current categories
+    $currentCategories = $db->fetchAll('SELECT id, name FROM categories');
+    $currentIds = array_column($currentCategories, 'id');
+
+    $updatedIds = [];
+
+    foreach ($data as $category) {
+        $id = $category['id'] ?? null;
+        $name = sanitizeString($category['name'] ?? '', 255);
+        $description = sanitizeString($category['description'] ?? '', 1000);
+        $order = (int)($category['order'] ?? 0);
+
+        if (!$name) continue; // Skip empty categories
+
+        if ($id && in_array($id, $currentIds)) {
+            // Update existing
+            $db->query(
+                'UPDATE categories SET name = ?, description = ?, `order` = ?, updatedAt = NOW() WHERE id = ?',
+                [$name, $description, $order, $id]
+            );
+        } else {
+            // Insert new
+            $newId = generateUUID();
+            $db->insert('categories', [
+                'id' => $newId,
+                'name' => $name,
+                'description' => $description,
+                'order' => $order,
+                'createdAt' => date('Y-m-d H:i:s'),
+                'updatedAt' => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        $updatedIds[] = $id ?: $newId;
+    }
+
+    // Delete categories not in the update
+    $toDelete = array_diff($currentIds, array_filter($updatedIds));
+    if (!empty($toDelete)) {
+        $placeholders = implode(',', array_fill(0, count($toDelete), '?'));
+        $db->query("DELETE FROM categories WHERE id IN ($placeholders)", $toDelete);
+
+        // Also delete portfolio items in deleted categories
+        $db->query("DELETE FROM portfolio WHERE category IN (SELECT name FROM categories WHERE id IN ($placeholders))", $toDelete);
+        $db->query("DELETE FROM portfolio_images WHERE portfolio_id IN (SELECT id FROM portfolio WHERE category IN (SELECT name FROM categories WHERE id IN ($placeholders)))", $toDelete);
+        $db->query("DELETE FROM portfolio_featured WHERE portfolio_id IN (SELECT id FROM portfolio WHERE category IN (SELECT name FROM categories WHERE id IN ($placeholders)))", $toDelete);
+    }
+
     jsonResponse(['success' => true]);
 }
 

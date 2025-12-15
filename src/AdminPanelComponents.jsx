@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { TikTokThumbnail } from './components/TikTokEmbed';
-const API_URL = process.env.REACT_APP_API_URL || '/api';
+const API_URL = process.env.REACT_APP_API_URL || 'https://portfolioweb-production-5696.up.railway.app';
 // Colors
 const colors = {
   beige: '#F5F5DC',
