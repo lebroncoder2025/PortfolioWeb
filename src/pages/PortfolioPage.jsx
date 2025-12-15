@@ -117,18 +117,18 @@ export default function PortfolioPage({ siteData = {} }) {
 
   return (
     <main style={{ backgroundColor: colors.linen, minHeight: '100vh', paddingTop: 96 }}>
-      <section className="py-20 px-8">
+      <section className="py-12 md:py-16 lg:py-20 px-4 md:px-8">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12" style={{ color: colors.darkGray }}>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12" style={{ color: colors.darkGray }}>
             Portfolio
           </h2>
 
-          <div className="flex justify-center gap-4 mb-12 flex-wrap">
+          <div className="flex justify-center gap-2 sm:gap-4 mb-8 sm:mb-12 flex-wrap">
             {[{ name: 'All' }, ...categories.map((name) => ({ name }))].map(cat => (
               <button
                 key={cat.name}
                 onClick={() => navigate(cat.name === 'All' ? '/portfolio' : `/portfolio/${encodeURIComponent(cat.name)}`)}
-                className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 border-2 hover:shadow-lg hover:scale-105 active:scale-95`}
+                className={`px-4 sm:px-6 py-2 rounded-lg text-sm sm:text-base font-semibold transition-all duration-300 border-2 hover:shadow-lg hover:scale-105 active:scale-95`}
                 style={{ backgroundColor: 'transparent', borderColor: colors.gold, color: colors.gold }}
               >
                 {cat.name}
@@ -136,7 +136,7 @@ export default function PortfolioPage({ siteData = {} }) {
             ))}
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             {portfolio.map((item, idx) => {
               const thumbData = getThumbnail(item);
               const hasVideo = !!item.video || (thumbData && (thumbData.kind === 'video' || thumbData.kind === 'youtube' || thumbData.kind === 'tiktok'));
@@ -149,9 +149,9 @@ export default function PortfolioPage({ siteData = {} }) {
                   const safeId = (item.id || item._id || item.title || idx).toString();
                   navigate(`/portfolio/${encodeURIComponent(safeCategory)}/${encodeURIComponent(safeId)}`);
                 }}
-                className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition group cursor-pointer"
+                className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition group cursor-pointer h-64"
               >
-                <div className="relative overflow-hidden h-64 bg-gray-100">
+                <div className="relative overflow-hidden h-full bg-gray-100">
                   {renderThumb(thumbData, item.title)}
 
                   {hasVideo && (
@@ -160,9 +160,9 @@ export default function PortfolioPage({ siteData = {} }) {
                     </div>
                   )}
                 </div>
-                <div className="p-6" style={{ backgroundColor: colors.cream }}>
-                  <p className="text-sm font-semibold mb-2" style={{ color: colors.gold }}>{item.category}</p>
-                  <h3 className="text-xl font-bold" style={{ color: colors.darkGray }}>{item.title}</h3>
+                <div className="p-4 sm:p-6" style={{ backgroundColor: colors.cream }}>
+                  <p className="text-xs sm:text-sm font-semibold mb-1 sm:mb-2" style={{ color: colors.gold }}>{item.category}</p>
+                  <h3 className="text-base sm:text-xl font-bold line-clamp-2" style={{ color: colors.darkGray }}>{item.title}</h3>
                 </div>
               </div>
             );})}

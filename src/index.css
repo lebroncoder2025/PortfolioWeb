@@ -91,6 +91,31 @@ body {
   .gap-4 {
     gap: 0.75rem;
   }
+
+  /* Header adjustments */
+  header {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  /* Main content adjustments */
+  .max-w-6xl,
+  .max-w-5xl,
+  .max-w-4xl {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  /* Portfolio item heights */
+  .aspect-video {
+    aspect-ratio: auto;
+    height: 300px;
+  }
+
+  /* Gallery grid responsive */
+  .grid {
+    gap: 1rem !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -98,9 +123,25 @@ body {
     font-size: 14px;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-size: 0.875rem !important;
+  h1 {
+    font-size: 1.5rem !important;
     line-height: 1.25;
+    margin-bottom: 0.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.25;
+    margin-bottom: 0.5rem !important;
+  }
+
+  h3, h4, h5, h6 {
+    font-size: 1rem !important;
+    line-height: 1.25;
+  }
+
+  p, span, a, button {
+    font-size: 0.875rem !important;
   }
 
   /* Stack everything vertically */
@@ -117,8 +158,13 @@ body {
   }
 
   .px-6 {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .py-6 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
   }
 
   input,
@@ -128,16 +174,22 @@ body {
     font-size: 16px; /* Prevent zoom */
     width: 100%;
     margin-bottom: 0.5rem;
-  }
-
-  button {
     padding: 0.75rem !important;
   }
 
+  button {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
   .max-w-5xl,
-  .max-w-7xl {
+  .max-w-7xl,
+  .max-w-6xl,
+  .max-w-4xl {
     width: 100% !important;
-    padding: 0.5rem !important;
+    padding: 0.25rem !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 
   /* Admin panel adjustments */
@@ -148,4 +200,38 @@ body {
   .sticky.top-16 {
     top: 56px; /* Adjust for compact header */
   }
+
+  /* Portfolio grid */
+  .grid-cols-1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Aspect ratios for mobile */
+  .aspect-video {
+    aspect-ratio: auto;
+    height: 200px;
+  }
+
+  /* Hero image size */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Navigation */
+  nav {
+    padding: 0.5rem !important;
+  }
+
+  /* Footer grid */
+  .grid.gap-12.sm\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
 }

@@ -38,7 +38,7 @@ function AppShell({ isLoggedIn, onLogout, onLogin, siteData, setSiteData }) {
   return (
     <div className="flex flex-col min-h-screen">
       {!isAdminRoute && <Header siteData={siteData} />}
-      <main className={isAdminRoute ? '' : 'app-content'} style={!isAdminRoute ? { paddingTop: 96 } : undefined}>
+      <main className={isAdminRoute ? '' : 'app-content'} style={!isAdminRoute ? { paddingTop: '64px', '@media (max-width: 768px)': { paddingTop: '56px' } } : undefined}>
         <Routes>
           <Route path="/" element={<HomePage siteData={siteData} />} />
           <Route path="/about" element={<AboutPage siteData={siteData} />} />

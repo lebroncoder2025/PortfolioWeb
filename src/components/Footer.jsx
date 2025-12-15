@@ -28,43 +28,43 @@ export default function Footer({ siteData = {} }) {
 
   return (
     <footer className="mt-auto" style={{ backgroundColor: colors.beige, borderTop: `4px solid ${colors.gold}` }}>
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid gap-12 sm:grid-cols-2 md:grid-cols-4 mb-12">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
+        <div className="grid gap-8 md:gap-12 sm:grid-cols-2 md:grid-cols-4 mb-8 md:mb-12">
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl" style={{ backgroundColor: colors.gold }}>
+            <div className="flex items-center gap-2 mb-3 md:mb-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white font-bold text-base md:text-xl" style={{ backgroundColor: colors.gold }}>
                 K
               </div>
-              <span className="text-xl font-bold" style={{ color: colors.darkGray }}>Portfolio</span>
+              <span className="text-lg md:text-xl font-bold" style={{ color: colors.darkGray }}>Portfolio</span>
             </div>
-            <p className="text-sm leading-relaxed" style={{ color: colors.brown }}>
+            <p className="text-xs md:text-sm leading-relaxed" style={{ color: colors.brown }}>
               Profesjonalne portfolio i prezentacja realizacji. Strona zoptymalizowana pod urządzenia mobilne.
             </p>
           </div>
 
           <div>
-            <p className="font-bold text-lg mb-4" style={{ color: colors.darkGray }}>Nawigacja</p>
-            <div className="flex flex-col gap-2">
-              <NavLink to="/" className="text-sm hover:underline transition" style={{ color: colors.brown }}>🏠 Home</NavLink>
-              <NavLink to="/about" className="text-sm hover:underline transition" style={{ color: colors.brown }}>👤 O mnie</NavLink>
-              <NavLink to="/services" className="text-sm hover:underline transition" style={{ color: colors.brown }}>💼 Usługi</NavLink>
-              <NavLink to="/portfolio" className="text-sm hover:underline transition" style={{ color: colors.brown }}>📸 Portfolio</NavLink>
-              <NavLink to="/contact" className="text-sm hover:underline transition" style={{ color: colors.brown }}>📧 Kontakt</NavLink>
+            <p className="font-bold text-base md:text-lg mb-3 md:mb-4" style={{ color: colors.darkGray }}>Nawigacja</p>
+            <div className="flex flex-col gap-1 md:gap-2">
+              <NavLink to="/" className="text-xs md:text-sm hover:underline transition" style={{ color: colors.brown }}>🏠 Home</NavLink>
+              <NavLink to="/about" className="text-xs md:text-sm hover:underline transition" style={{ color: colors.brown }}>👤 O mnie</NavLink>
+              <NavLink to="/services" className="text-xs md:text-sm hover:underline transition" style={{ color: colors.brown }}>💼 Usługi</NavLink>
+              <NavLink to="/portfolio" className="text-xs md:text-sm hover:underline transition" style={{ color: colors.brown }}>📸 Portfolio</NavLink>
+              <NavLink to="/contact" className="text-xs md:text-sm hover:underline transition" style={{ color: colors.brown }}>📧 Kontakt</NavLink>
             </div>
           </div>
 
           <div>
-            <p className="font-bold text-lg mb-4" style={{ color: colors.darkGray }}>Kontakt</p>
+            <p className="font-bold text-base md:text-lg mb-3 md:mb-4" style={{ color: colors.darkGray }}>Kontakt</p>
             {email ? (
-              <a className="text-sm hover:underline transition block mb-2" href={`mailto:${email}`} style={{ color: colors.brown }}>
+              <a className="text-xs md:text-sm hover:underline transition block mb-2" href={`mailto:${email}`} style={{ color: colors.brown }}>
                 ✉️ {email}
               </a>
             ) : (
-              <p className="text-sm mb-2" style={{ color: colors.brown }}>Dane kontaktowe wkrótce.</p>
+              <p className="text-xs md:text-sm mb-2" style={{ color: colors.brown }}>Dane kontaktowe wkrótce.</p>
             )}
             <NavLink
               to="/admin_panel"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold mt-4 transition duration-300 hover:shadow-lg hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold mt-3 md:mt-4 transition duration-300 hover:shadow-lg hover:scale-105 active:scale-95"
               style={{ backgroundColor: colors.cream, color: colors.brown, border: `2px solid ${colors.gold}` }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = colors.gold;
@@ -82,8 +82,8 @@ export default function Footer({ siteData = {} }) {
           </div>
 
           <div>
-            <p className="font-bold text-lg mb-4" style={{ color: colors.darkGray }}>Obserwuj nas</p>
-            <div className="flex flex-wrap gap-3">
+            <p className="font-bold text-base md:text-lg mb-3 md:mb-4" style={{ color: colors.darkGray }}>Obserwuj nas</p>
+            <div className="flex flex-wrap gap-2 md:gap-3">
               {Object.entries(socialIcons).map(([key, { icon, label }]) => (
                 social[key] && (
                   <a
@@ -91,7 +91,7 @@ export default function Footer({ siteData = {} }) {
                     href={social[key]}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-lg flex items-center justify-center text-lg transition duration-300 hover:shadow-lg hover:scale-110 active:scale-95"
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center text-base md:text-lg transition duration-300 hover:shadow-lg hover:scale-110 active:scale-95"
                     title={label}
                     style={{ 
                       backgroundColor: colors.cream, 
