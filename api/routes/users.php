@@ -35,8 +35,13 @@ function handleUsers($uri, $method, $user) {
 }
 
 function getUsers($db) {
-    $users = $db->fetchAll('SELECT id, email, role, name, createdAt FROM users ORDER BY createdAt DESC');
-    jsonResponse($users);
+    try {
+        $users = $db->fetchAll('SELECT id, email, role, name, createdAt FROM users ORDER BY createdAt DESC');
+        jsonResponse($users);
+    } catch (Exception $e) {
+        error_log('getUsers error: ' . $e->getMessage());
+        errorResponse('Błąd pobierania użytkowników: ' . $e->getMessage(), 500);
+    }
 }
 
 function createUser($db, $currentUser) {
