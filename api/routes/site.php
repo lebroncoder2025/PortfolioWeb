@@ -686,11 +686,15 @@ function updateCategories($user) {
     $db = Database::getInstance();
     $data = getJsonBody();
 
+    error_log("updateCategories received data: " . json_encode($data));
+
     // Get current categories
     $currentCategories = $db->fetchAll('SELECT id, name FROM categories');
     $currentIds = array_column($currentCategories, 'id');
+    $currentNames = array_column($currentCategories, 'name', 'id');
 
     $updatedIds = [];
+    $newId = null;
 
     foreach ($data as $category) {
         $id = $category['id'] ?? null;
@@ -706,6 +710,8 @@ function updateCategories($user) {
                 'UPDATE categories SET name = ?, description = ?, `order` = ?, updatedAt = NOW() WHERE id = ?',
                 [$name, $description, $order, $id]
             );
+            $updatedIds[] = $id;
+            error_log("Updated category: $id -> $name");
         } else {
             // Insert new
             $newId = generateUUID();
@@ -717,24 +723,55 @@ function updateCategories($user) {
                 'createdAt' => date('Y-m-d H:i:s'),
                 'updatedAt' => date('Y-m-d H:i:s')
             ]);
+            $updatedIds[] = $newId;
+            error_log("Inserted new category: $newId -> $name");
         }
-
-        $updatedIds[] = $id ?: $newId;
     }
 
     // Delete categories not in the update
-    $toDelete = array_diff($currentIds, array_filter($updatedIds));
+    $toDelete = array_diff($currentIds, $updatedIds);
+    error_log("Categories to delete: " . json_encode(array_values($toDelete)));
+    
     if (!empty($toDelete)) {
+        // First get names of categories to delete for portfolio cleanup
+        $namesToDelete = [];
+        foreach ($toDelete as $delId) {
+            if (isset($currentNames[$delId])) {
+                $namesToDelete[] = $currentNames[$delId];
+            }
+        }
+        
+        // Delete the categories
         $placeholders = implode(',', array_fill(0, count($toDelete), '?'));
-        $db->query("DELETE FROM categories WHERE id IN ($placeholders)", $toDelete);
+        $deleteIds = array_values($toDelete);
+        $db->query("DELETE FROM categories WHERE id IN ($placeholders)", $deleteIds);
+        error_log("Deleted categories with IDs: " . implode(', ', $deleteIds));
 
-        // Also delete portfolio items in deleted categories
-        $db->query("DELETE FROM portfolio WHERE category IN (SELECT name FROM categories WHERE id IN ($placeholders))", $toDelete);
-        $db->query("DELETE FROM portfolio_images WHERE portfolio_id IN (SELECT id FROM portfolio WHERE category IN (SELECT name FROM categories WHERE id IN ($placeholders)))", $toDelete);
-        $db->query("DELETE FROM portfolio_featured WHERE portfolio_id IN (SELECT id FROM portfolio WHERE category IN (SELECT name FROM categories WHERE id IN ($placeholders)))", $toDelete);
+        // Delete portfolio items in deleted categories by name
+        if (!empty($namesToDelete)) {
+            $namePlaceholders = implode(',', array_fill(0, count($namesToDelete), '?'));
+            
+            // First get portfolio IDs to delete related images/featured
+            $portfolioToDelete = $db->fetchAll(
+                "SELECT id FROM portfolio WHERE category IN ($namePlaceholders)",
+                $namesToDelete
+            );
+            $portfolioIds = array_column($portfolioToDelete, 'id');
+            
+            if (!empty($portfolioIds)) {
+                $pPlaceholders = implode(',', array_fill(0, count($portfolioIds), '?'));
+                $db->query("DELETE FROM portfolio_images WHERE portfolio_id IN ($pPlaceholders)", $portfolioIds);
+                $db->query("DELETE FROM portfolio_featured WHERE portfolio_id IN ($pPlaceholders)", $portfolioIds);
+            }
+            
+            $db->query("DELETE FROM portfolio WHERE category IN ($namePlaceholders)", $namesToDelete);
+            error_log("Deleted portfolio items in categories: " . implode(', ', $namesToDelete));
+        }
     }
 
-    jsonResponse(['success' => true]);
+    // Return updated categories
+    $updatedCategories = $db->fetchAll('SELECT * FROM categories ORDER BY `order` ASC');
+    jsonResponse(['success' => true, 'categories' => $updatedCategories]);
 }
 
 function updateLayout($user) {
