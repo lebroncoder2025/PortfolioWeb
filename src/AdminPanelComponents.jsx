@@ -1484,6 +1484,8 @@ const UsersEditor = ({ currentUser }) => {
       if (res.ok) {
         const data = await res.json();
         setUsers(data);
+      } else if (res.status === 500) {
+        setListMsg({ type: 'warning', text: '⚠️ Zarządzanie użytkownikami niedostępne - baza danych nie skonfigurowana' });
       } else {
         const error = await res.json().catch(() => ({ error: 'Unknown error' }));
         setListMsg({ type: 'error', text: `❌ Błąd ładowania użytkowników: ${error.error}` });
@@ -1845,6 +1847,8 @@ const LogsEditor = ({ currentUser }) => {
         setLogs(data.logs);
         setTotalPages(data.pagination.pages);
         setPage(pageNum);
+      } else if (res.status === 500) {
+        setError('⚠️ System logowania niedostępny - baza danych nie skonfigurowana');
       } else {
         const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
         setError(`❌ Błąd ładowania logów: ${errorData.error}`);
