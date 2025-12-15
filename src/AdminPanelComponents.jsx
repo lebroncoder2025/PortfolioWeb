@@ -19,7 +19,7 @@ const getMediaType = (url) => {
   if (lower.includes('youtube.com') || lower.includes('youtu.be')) return 'youtube';
   if (lower.match(/\.(mp4|webm|mov|avi|m4v)(\?|#|$)/)) return 'video';
   if (lower.match(/\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|#|$)/)) return 'image';
-  if (lower.includes('/uploads/') || lower.includes('picsum') || lower.includes('unsplash')) return 'image';
+  if (lower.includes('/uploads/') || lower.includes('picsum') || lower.includes('unsplash') || lower.includes('/image/')) return 'image';
   return 'unknown';
 };
 // Helper utilities
@@ -603,7 +603,12 @@ const PortfolioEditor = ({ siteData, setSiteData }) => {
       });
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
-          if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            // Response now has {id, url: '/image/{id}', filename}
+            // Transform to keep backward compatibility with existing code expecting {url}
+            resolve({ url: response.url });
+          }
           else reject(new Error('Upload failed'));
         }
       };
